@@ -13,56 +13,49 @@ import FeaturedProducts from "./FeaturedProducts"; // Corrected import
 const products = [
   {
     id: 1,
-    name: "Universal Testing Machine",
+    name: "Laboratory Hot Air Oven",
     description:
-      "Computerized universal testing machine with advanced features.",
-    price: 1500,
+      "Computerized laboratory hot air oven with advanced features.",
     image:
-      "https://5.imimg.com/data5/SELLER/Default/2021/7/RH/XO/FB/12196911/computerized-universal-testing-machine-500x500.png",
+      "http://localhost:5000/uploads/product53.jpg",
   },
   {
     id: 2,
-    name: "Impact Testing Machine",
-    description: "Mechanical impact testing machine with high precision.",
-    price: 1100,
+    name: "STD Calibration weight",
+    description: "High precision calibration weight for accurate measurements.",
     image:
-      "https://3.imimg.com/data3/TL/RM/GLADMIN-146525/mechanical-impact-testing-machine-250x250.jpg",
+      "http://localhost:5000/uploads/product61.webp",
   },
   {
     id: 3,
-    name: "Compression Testing Machine",
-    description: "Semi-automatic compression testing solution for materials.",
-    price: 1300,
+    name: "SDC Grey Scale for Staining",
+    description: "Essential tool for evaluating color fastness in textiles.",
     image:
-      "https://civillabequipmentmanufacturer.com/wp-content/uploads/2023/04/semi-automatic-compression-testing-machine.jpg",
+      "http://localhost:5000/uploads/product58.webp",
   },
   {
     id: 4,
-    name: "Tensile Testing Machine",
-    description: "Highly durable tensile testing equipment for industrial use.",
-    price: 1400,
-    image: "../../assets/images/product111.jpg",
+    name: "Fabric Thickness Tester",
+    description: "Highly durable fabric thickness testing equipment for industrial use.",
+    image: "http://localhost:5000/uploads/product62.jpg",
   },
   {
     id: 5,
-    name: "ICI Pilling Machine",
-    description: "Accurate and easy-to-use hardness testing system.",
-    price: 900,
-    image: "../../assets/images/product74.jpg",
+    name: "Hydraulic GSM Cutter",
+    description: "Accurate and easy-to-use GSM cutting machine.",
+    image: "http://localhost:5000/uploads/product52.png",
   },
   {
     id: 6,
-    name: "PPE KITS",
-    description: "Designed to measure fatigue strength of materials.",
-    price: 1600,
-    image: "../../assets/images/product54.jpg",
+    name: "Acrylic Plate for Color Fastness Testing",
+    description: "High-quality acrylic plate for color fastness testing in textiles.",
+    image: "http://localhost:5000/uploads/product40.jpg",
   },
   {
     id: 7,
-    name: "Submilimation Fastness Tester",
-    description: "Advanced system for creep testing under prolonged load.",
-    price: 1700,
-    image: "../../assets/images/product77.jpg",
+    name: "SDC TAED- Tetraacetylethylenediamine",
+    description: "High-quality TAED for use in detergents and cleaning products.",
+    image: "http://localhost:5000/uploads/product47.webp",
   },
 ];
 
@@ -124,7 +117,7 @@ export default function HomePage() {
   return (
     <div className="max-w-9xl mx-auto px-4 sm:px-4 lg:px-8">
       {/* Hero Section */}
-      <section className="relative h-[450px] rounded-lg overflow-hidden">
+      <section className="relative h-[450px] rounded-lg overflow-hidden mt-4 md:mt-0">
         {heroImages.map((image, index) => (
           <div
             key={image.id}
@@ -164,7 +157,7 @@ export default function HomePage() {
               </motion.p>
 
               <Link
-                to="/our-products"
+                to="/all-products"
                 className={`px-6 py-2 rounded-full transition-all duration-300 font-semibold border-2 border-transparent 
                   hover:border-yellow-500 hover:ring-1 hover:ring-yellow-500
                    ${
@@ -232,16 +225,16 @@ export default function HomePage() {
 
       {/* Testimonials */}
       <section
-        className="w-full h-[600px] bg-cover bg-center flex items-center justify-center m-0 p-0 "
+        className="w-full h-[500px] bg-cover bg-center flex items-center justify-center m-0 p-0 "
         style={{
           backgroundImage: `url(${banner})`,
         }}
       >
-        <div className="bg-black bg-opacity-50 p-6 mt-[-280px] rounded-lg text-white text-center">
-          <h2 className="text-4xl font-bold">
+        <div className="bg-black bg-opacity-50 p-6 mt-[-180px] rounded-lg text-white text-center">
+          <h2 className="text-3xl font-bold">
             Welcome to Our Testing Solutions
           </h2>
-          <p className="mt-4 text-lg max-w-xl">
+          <p className="mt-1 text-1xl max-w-xl">
             Delivering premium quality testing machines and exceptional customer
             support.
           </p>
@@ -261,8 +254,7 @@ export default function HomePage() {
       >
         <h2 className="text-4xl font-bold mb-8">Limited Time Promotion</h2>
         <p className="max-w-xl mx-auto text-xl">
-          Get 15% off on all compression testing machines! Use code{" "}
-          <strong>PROMO15</strong> at checkout.
+          For Addvertisement Contact With Us
         </p>
       </section>
 
@@ -274,7 +266,7 @@ export default function HomePage() {
 function Divider() {
   return (
     <div className="relative w-full my-3">
-      <div className="mx-auto w-4/5 border-t-4 border-blue-500"></div>
+      <div className="mx-auto w-2/5 border-t-4 border-blue-500"></div>
       <span className="absolute -left-4 translate-x-20 -top-3 text-orange-400 text-xl rotate-0">
         ➤
       </span>

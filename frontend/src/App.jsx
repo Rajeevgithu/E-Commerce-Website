@@ -21,12 +21,16 @@ import SignupPage from './pages/SignupPage';
 import CartPage from './pages/CartPage';
 import CategoryPage from './pages/CategoryPage';
 
+import Gallery from './pages/our-gallery/Gallery';
+import Blogs from './pages/blogs/Blogs';
+import LatestNews from './pages/latest-news/LatestNews';
+
 import { FaWhatsapp, FaPhoneAlt } from 'react-icons/fa';
 
 function App() {
   return (
     <AuthProvider> {/* ✅ Wrap everything inside AuthProvider */}
-      <Router>
+      <Router future={{ v7_startTransition: true }}>
         <CartProvider>
           <div className="bg-white dark:bg-gray-900 dark:text-white duration-200 min-h-screen flex flex-col">
             <Navbar />
@@ -40,7 +44,8 @@ function App() {
                 <Route path="/admin/edit-product/:id" element={<EditProduct />} />
 
                 {/* Public Routes */}
-                <Route path="/our-products" element={<ProductPage />} />
+                <Route path="/all-products" element={<ProductPage />} />
+                <Route path="/all-products/:category" element={<ProductPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/about-us" element={<AboutPage />} />
                 <Route path="/login" element={<LoginPage />} />
@@ -48,10 +53,14 @@ function App() {
                 <Route path="/cart" element={<CartPage />} />
                 
                 {/* Category Routes */}
-                <Route path="/consumables" element={<CategoryPage />} />
+                <Route path="/consumable-products" element={<CategoryPage />} />
+                <Route path="/testing-products" element={<CategoryPage />} />
                 <Route path="/paint-&-coating" element={<CategoryPage />} />
-                <Route path="/texttiles-testing-instruments" element={<CategoryPage />} />
-                <Route path="/test-chambers" element={<CategoryPage />} />
+
+                {/* New Routes */}
+                <Route path="/our-gallery" element={<Gallery />} />
+                <Route path="/blogs" element={<Blogs />} />
+                <Route path="/latest-news" element={<LatestNews />} />
               </Routes>
             </main>
 
