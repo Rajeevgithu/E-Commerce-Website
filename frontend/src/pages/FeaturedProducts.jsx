@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import "swiper/css";
 
+const BASE_URL = "http://localhost:5000"; // Ensure this is your backend URL
+
 const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
   if (!products.length || !sectionBackgrounds.length) return null;
 
@@ -37,48 +39,57 @@ const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
           loop={true}
           grabCursor
         >
-          {products.map((product) => (
-            <SwiperSlide key={product.id}>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="bg-white text-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300 flex flex-col w-[300px] h-[420px] mx-auto "
-              >
-                <div className="relative overflow-hidden flex items-center justify-center h-48 bg-white">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="max-h-full max-w-full object-contain"
-                  />
-                  <div className="absolute inset-0 bg-black opacity-40"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Link to={`/our-products/${product.id}`}></Link>
+          {products.map((product) => {
+            const imgSrc =
+              product.image?.startsWith("http") || product.image?.startsWith("/")
+                ? product.image
+                : `${BASE_URL}/${product.image}`;
+
+            return (
+              <SwiperSlide key={product._id || product.id}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white text-gray-900 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300 flex flex-col w-[300px] h-[420px] mx-auto"
+                >
+                  <div className="relative overflow-hidden flex items-center justify-center h-48 bg-white">
+                    <img
+                      src={imgSrc}
+                      alt={product.name}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                    <div className="absolute inset-0 bg-black opacity-40" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Link to={`/all-products/${product._id || product.id}`} />
+                    </div>
                   </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col justify-between text-left">
-                  <div>
-                    <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                    <p className="text-gray-500 text-sm">
-                      {product.description}
-                    </p>
+                  <div className="p-6 flex-1 flex flex-col justify-between text-left">
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">
+                        {product.name}
+                      </h3>
+                      <p className="text-gray-500 text-sm line-clamp-2">
+                        {product.description}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-gray-900 font-bold text-lg">
+                        ₹{typeof product.price === "number" ? product.price.toFixed(2) : "N/A"}
+                      </span>
+                      <Link
+                        to={`/all-products/${product._id || product.id}`}
+                        className="bg-gray-900 text-white py-2 px-4 rounded-full font-bold 
+              hover:bg-gray-800 transition 
+              border-2 border-transparent hover:border-yellow-500 
+              hover:ring-1 hover:ring-yellow-500"
+                      >
+                        Add to Cart
+                      </Link>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="text-gray-900 font-bold text-lg">
-                      ₹{product.price.toFixed(2)}
-                    </span>
-                    <Link
-                      to={`/our-products/${product.id}`}
-                      className="bg-gray-900 text-white py-2 px-4 rounded-full font-bold 
-             hover:bg-gray-800 transition 
-             border-2 border-transparent hover:border-yellow-500 
-             hover:ring-1 hover:ring-yellow-500"
-                    >
-                      Add to Cart
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            </SwiperSlide>
-          ))}
+                </motion.div>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </div>
     </section>

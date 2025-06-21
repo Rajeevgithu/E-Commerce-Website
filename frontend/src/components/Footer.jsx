@@ -23,20 +23,16 @@ const BannerImg = {
 
 const FooterLinks = [
   {
-    title: "Texttiles Testing Instruments",
-    link: "/texttiles-testing-instruments",
+    title: "Consumable Items",
+    link: "/all-products/consumable-items",
   },
   {
-    title: "Consumables",
-    link: "/consumables",
+    title: "Testing Products",
+    link: "/all-products/testing-products",
   },
   {
     title: "Paint & Coating",
-    link: "/paint-&-coating",
-  },
-  {
-    title: "Test Chambers",
-    link: "/test-chambers",
+    link: "/all-products/paint-&-coating",
   },
 ];
 
@@ -48,28 +44,28 @@ const Footer = () => {
       data-aos="fade-up"
     >
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Company Info */}
-          <div data-aos="fade-right">
-            <div className="flex items-center gap-3 mb-3">
-              <img src={footerLogo} alt="Logo" className="w-12 h-12" />
-              <h1 className="text-2xl font-bold">Text Tech Enterprises</h1>
+          <div data-aos="fade-right" className="text-center sm:text-left">
+            <div className="flex items-center gap-3 mb-3 justify-center sm:justify-start">
+              <img src={footerLogo} alt="Logo" className="w-10 h-10 sm:w-12 sm:h-12" />
+              <h1 className="text-xl sm:text-2xl font-bold">Text Tech Enterprises</h1>
             </div>
-            <p className="text-gray-200">
+            <p className="text-gray-200 text-sm sm:text-base">
               Text Tech Enterprises is a highly renowned supplier and importer in
-            the textile industry and testing labs
+              the textile industry and testing labs
             </p>
           </div>
 
           {/* Our Services Links */}
-          <div data-aos="fade-up">
-            <h2 className="text-xl font-bold mb-4">Our Services</h2>
-            <ul className="space-y-3">
+          <div data-aos="fade-up" className="text-center sm:text-left">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">Our Services</h2>
+            <ul className="space-y-2 sm:space-y-3">
               {FooterLinks.map((link) => (
                 <li key={link.title} className="group">
                   <Link
                     to={link.link}
-                    className="text-white group-hover:text-yellow-400 transition-colors duration-300 inline-block"
+                    className="text-white group-hover:text-yellow-400 transition-colors duration-300 inline-block text-sm sm:text-base"
                   >
                     {link.title}
                   </Link>
@@ -79,39 +75,39 @@ const Footer = () => {
           </div>
 
           {/* Contact & Social Media */}
-          <div data-aos="fade-left">
-            <h2 className="text-xl font-bold mb-4">Get In Touch</h2>
-            <div className="space-y-3 text-gray-200">
-              <div className="flex items-start gap-3">
-                <FaLocationArrow className="text-xl mt-1" />
-                <p>Boisar, Palghar, Mumbai, Maharashtra 401506</p>
+          <div data-aos="fade-left" className="text-center sm:text-left">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">Get In Touch</h2>
+            <div className="space-y-2 sm:space-y-3 text-gray-200">
+              <div className="flex items-start gap-3 justify-center sm:justify-start">
+                <FaLocationArrow className="text-lg sm:text-xl mt-1" />
+                <p className="text-sm sm:text-base">Boisar, Palghar, Mumbai, Maharashtra 401506</p>
               </div>
-              <div className="flex items-center gap-3">
-                <FaMobileAlt className="text-xl" />
-                <p>+91 76669 40824</p>
+              <div className="flex items-center gap-3 justify-center sm:justify-start">
+                <FaMobileAlt className="text-lg sm:text-xl" />
+                <p className="text-sm sm:text-base">+91 76669 40824</p>
               </div>
-              <div className="flex items-center gap-3">
-                <FaEnvelope className="text-xl" />
-                <p>sales@texttechenterprises.com</p>
+              <div className="flex items-center gap-3 justify-center sm:justify-start">
+                <FaEnvelope className="text-lg sm:text-xl" />
+                <p className="text-sm sm:text-base">sales@texttechenterprises.com</p>
               </div>
             </div>
 
             {/* Social Icons with Working Hover */}
-            <div className="flex items-center gap-4 mt-6">
+            <div className="flex items-center gap-4 mt-6 justify-center sm:justify-start">
               <a href="#" aria-label="Instagram" className="group text-[#E4405F]">
-                <FaInstagram className="text-2xl transition duration-300 group-hover:text-white" />
+                <FaInstagram className="text-xl sm:text-2xl transition duration-300 group-hover:text-white" />
               </a>
               <a href="#" aria-label="WhatsApp" className="group text-[#25D366]">
-                <FaWhatsapp className="text-2xl transition duration-300 group-hover:text-white" />
+                <FaWhatsapp className="text-xl sm:text-2xl transition duration-300 group-hover:text-white" />
               </a>
               <a href="#" aria-label="Twitter" className="group text-[#1DA1F2]">
-                <FaTwitter className="text-2xl transition duration-300 group-hover:text-white" />
+                <FaTwitter className="text-xl sm:text-2xl transition duration-300 group-hover:text-white" />
               </a>
               <a href="#" aria-label="Facebook" className="group text-[#1877F2]">
-                <FaFacebook className="text-2xl transition duration-300 group-hover:text-white" />
+                <FaFacebook className="text-xl sm:text-2xl transition duration-300 group-hover:text-white" />
               </a>
               <a href="#" aria-label="LinkedIn" className="group text-[#0077B5]">
-                <FaLinkedin className="text-2xl transition duration-300 group-hover:text-white" />
+                <FaLinkedin className="text-xl sm:text-2xl transition duration-300 group-hover:text-white" />
               </a>
             </div>
           </div>
