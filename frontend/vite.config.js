@@ -16,7 +16,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    minify: 'terser',
+    minify: 'esbuild',
   },
   define: {
     'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL)
