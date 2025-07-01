@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import footerLogo from "../assets/images/Logo.png";
 import Banner from "../assets/images/footer-banner.jpg";
+import { contactConfig } from "../config/contact";
 import {
   FaFacebook,
   FaInstagram,
@@ -49,7 +50,7 @@ const Footer = () => {
           <div data-aos="fade-right" className="text-center sm:text-left">
             <div className="flex items-center gap-3 mb-3 justify-center sm:justify-start">
               <img src={footerLogo} alt="Logo" className="w-10 h-10 sm:w-12 sm:h-12" />
-              <h1 className="text-xl sm:text-2xl font-bold">Text Tech Enterprises</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">{contactConfig.companyName}</h1>
             </div>
             <p className="text-gray-200 text-sm sm:text-base">
               Text Tech Enterprises is a highly renowned supplier and importer in
@@ -80,15 +81,15 @@ const Footer = () => {
             <div className="space-y-2 sm:space-y-3 text-gray-200">
               <div className="flex items-start gap-3 justify-center sm:justify-start">
                 <FaLocationArrow className="text-lg sm:text-xl mt-1" />
-                <p className="text-sm sm:text-base">Boisar, Palghar, Mumbai, Maharashtra 401506</p>
+                <p className="text-sm sm:text-base">{contactConfig.address}</p>
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <FaMobileAlt className="text-lg sm:text-xl" />
-                <p className="text-sm sm:text-base">+91 76669 40824</p>
+                <p className="text-sm sm:text-base">{contactConfig.phone}</p>
               </div>
               <div className="flex items-center gap-3 justify-center sm:justify-start">
                 <FaEnvelope className="text-lg sm:text-xl" />
-                <p className="text-sm sm:text-base">sales@texttechenterprises.com</p>
+                <p className="text-sm sm:text-base">{contactConfig.email}</p>
               </div>
             </div>
 

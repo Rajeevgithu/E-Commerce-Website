@@ -26,6 +26,7 @@ import Blogs from './pages/blogs/Blogs';
 import LatestNews from './pages/latest-news/LatestNews';
 
 import { FaWhatsapp, FaPhoneAlt } from 'react-icons/fa';
+import { getWhatsAppUrl, getPhoneUrl } from './config/contact';
 
 function App() {
   return (
@@ -66,10 +67,10 @@ function App() {
 
             {/* Floating WhatsApp & Phone icons */}
             <div className="fixed right-4 bottom-20 flex flex-col items-center space-y-4 z-50">
-              <a href="https://wa.me/7756038758" target="_blank" rel="noopener noreferrer">
+              <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer">
                 <FaWhatsapp className="text-green-500 text-4xl hover:text-white transition-all drop-shadow-lg" />
               </a>
-              <a href="tel:7756038758" target="_blank" rel="noopener noreferrer">
+              <a href={getPhoneUrl()} target="_blank" rel="noopener noreferrer">
                 <FaPhoneAlt className="text-green-500 text-4xl hover:text-white transition-all drop-shadow-lg" />
               </a>
             </div>
