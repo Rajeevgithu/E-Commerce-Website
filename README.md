@@ -4,7 +4,7 @@ A modern, full-stack e-commerce platform built with React, Node.js, and MongoDB.
 
 ## 🌟 Live Demo
 
-**Frontend**: [e-commerce-website-lilac-ten-30.vercel.app](https://e-commerce-website-lilac-ten-30.vercel.app)
+**Frontend**: [e-commerce-website-dsnj.vercel.app/](https://e-commerce-website-dsnj.vercel.app/)
 
 ## ✨ Features
 
