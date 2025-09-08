@@ -240,11 +240,14 @@ function ProductPage() {
                       <SwiperSlide key={index}>
                         <div className="flex justify-center items-center h-full bg-white">
                           <img
-                            src={
-                              img?.startsWith("http")
-                                ? img
-                                : `${BASE_URL}${img}`
-                            }
+                            src={(() => {
+                              if (!img) return '';
+                              if (img.startsWith('http')) return img;
+                              const path = img.startsWith('/uploads') || img.includes('/uploads/')
+                                ? img.replace(/^\/+/, '')
+                                : `uploads/${img.replace(/^\/+/, '')}`;
+                              return `${BASE_URL}/${path}`;
+                            })()}
                             alt={`Preview ${index + 1}`}
                             className="object-contain h-full w-full max-w-full max-h-full rounded-xl transition-transform duration-300 ease-in-out hover:scale-105"
                             loading="lazy"
