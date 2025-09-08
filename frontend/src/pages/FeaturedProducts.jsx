@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import "swiper/css";
 
-const BASE_URL = "http://localhost:5000"; // Ensure this is your backend URL
+const BASE_URL = import.meta.env.VITE_API_URL || "https://e-commerce-website-1-lmr9.onrender.com"; // Ensure this is your backend URL
 
 const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
   if (!products.length || !sectionBackgrounds.length) return null;
@@ -40,10 +40,15 @@ const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
           grabCursor
         >
           {products.map((product) => {
-            const imgSrc =
-              product.image?.startsWith("http") || product.image?.startsWith("/")
-                ? product.image
-                : `${BASE_URL}/${product.image}`;
+            const imgSrc = (() => {
+              const img = product.image;
+              if (!img) return '';
+              if (img.startsWith('http')) return img;
+              const path = img.startsWith('/uploads') || img.includes('/uploads/')
+                ? img.replace(/^\/+/, '')
+                : `uploads/${img.replace(/^\/+/, '')}`;
+              return `${BASE_URL}/${path}`;
+            })();
 
             return (
               <SwiperSlide key={product._id || product.id}>

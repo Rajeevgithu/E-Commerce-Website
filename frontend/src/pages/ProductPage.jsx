@@ -11,7 +11,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_URL || "https://e-commerce-website-1-lmr9.onrender.com";
 
 function ProductPage() {
   const { addToCart } = useCart();
@@ -146,7 +146,14 @@ function ProductPage() {
                 ).map((img, index) => (
                   <SwiperSlide key={index}>
                     <img
-                      src={img?.startsWith("http") ? img : `${BASE_URL}${img}`}
+                      src={(() => {
+                        if (!img) return '';
+                        if (img.startsWith('http')) return img;
+                        const path = img.startsWith('/uploads') || img.includes('/uploads/')
+                          ? img.replace(/^\/+/, '')
+                          : `uploads/${img.replace(/^\/+/, '')}`;
+                        return `${BASE_URL}/${path}`;
+                      })()}
                       alt={`${product.name} ${index + 1}`}
                       className="object-contain w-full h-full"
                       loading="lazy"

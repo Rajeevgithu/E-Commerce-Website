@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
       }
       try {
         setLoading(true);
-        const res = await axios.get('http://localhost:5000/api/auth/me', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/api/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.user);
@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/api/auth/login`, {
         email,
         password,
       });

@@ -41,7 +41,16 @@ function CategoryPage({ addToCart }) {
               className="border rounded-lg p-4 shadow hover:shadow-lg transition bg-white flex flex-col"
             >
               <img
-                src={product.image?.startsWith("http") ? product.image : `http://localhost:5000${product.image}`}
+                src={(() => {
+                  const base = import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com';
+                  const img = product.image;
+                  if (!img) return '';
+                  if (img.startsWith('http')) return img;
+                  const path = img.startsWith('/uploads') || img.includes('/uploads/')
+                    ? img.replace(/^\/+/, '')
+                    : `uploads/${img.replace(/^\/+/, '')}`;
+                  return `${base}/${path}`;
+                })()}
                 alt={product.name}
                 className="w-full h-40 object-cover rounded"
               />

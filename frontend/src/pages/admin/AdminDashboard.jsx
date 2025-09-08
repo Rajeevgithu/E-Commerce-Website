@@ -21,7 +21,7 @@ const AdminDashboard = () => {
     try {
       setDeletingId(productId);
       setDeleteError(null);
-      await axios.delete(`http://localhost:5000/api/products/${productId}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/api/products/${productId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       // Remove deleted product from state for instant UI update

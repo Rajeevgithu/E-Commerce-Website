@@ -3,7 +3,7 @@ import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_URL || "https://e-commerce-website-1-lmr9.onrender.com";
 
 // Modal Component (inline)
 function Modal({ title, message, onClose }) {
@@ -102,13 +102,15 @@ function CartPage() {
             <div key={product._id} className="flex flex-col bg-white shadow-md rounded-xl p-4 h-full">
               <div className="w-full aspect-[4/3] bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
                 <img
-                  src={
-                    Array.isArray(product.image)
-                      ? `${BASE_URL}${product.image[0]}`
-                      : product.image?.startsWith('http')
-                      ? product.image
-                      : `${BASE_URL}${product.image}`
-                  }
+                  src={(() => {
+                    const img = Array.isArray(product.image) ? product.image[0] : product.image;
+                    if (!img) return '';
+                    if (img.startsWith('http')) return img;
+                    const path = img.startsWith('/uploads') || img.includes('/uploads/')
+                      ? img.replace(/^\/+/, '')
+                      : `uploads/${img.replace(/^\/+/, '')}`;
+                    return `${BASE_URL}/${path}`;
+                  })()}
                   alt={product.name}
                   className="w-full h-full object-contain"
                   loading="lazy"
