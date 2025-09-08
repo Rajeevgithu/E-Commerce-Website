@@ -17,45 +17,45 @@ const products = [
     description:
       "Computerized laboratory hot air oven with advanced features.",
     image:
-      "http://localhost:5000/uploads/product53.jpg",
+      `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/uploads/product53.jpg`,
   },
   {
     id: 2,
     name: "STD Calibration weight",
     description: "High precision calibration weight for accurate measurements.",
     image:
-      "http://localhost:5000/uploads/product61.webp",
+      `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/uploads/product61.webp`,
   },
   {
     id: 3,
     name: "SDC Grey Scale for Staining",
     description: "Essential tool for evaluating color fastness in textiles.",
     image:
-      "http://localhost:5000/uploads/product58.webp",
+      `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/uploads/product58.webp`,
   },
   {
     id: 4,
     name: "Fabric Thickness Tester",
     description: "Highly durable fabric thickness testing equipment for industrial use.",
-    image: "http://localhost:5000/uploads/product62.jpg",
+    image: `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/uploads/product62.jpg`,
   },
   {
     id: 5,
     name: "Hydraulic GSM Cutter",
     description: "Accurate and easy-to-use GSM cutting machine.",
-    image: "http://localhost:5000/uploads/product52.png",
+    image: `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/uploads/product52.png`,
   },
   {
     id: 6,
     name: "Acrylic Plate for Color Fastness Testing",
     description: "High-quality acrylic plate for color fastness testing in textiles.",
-    image: "http://localhost:5000/uploads/product40.jpg",
+    image: `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/uploads/product40.jpg`,
   },
   {
     id: 7,
     name: "SDC TAED- Tetraacetylethylenediamine",
     description: "High-quality TAED for use in detergents and cleaning products.",
-    image: "http://localhost:5000/uploads/product47.webp",
+    image: `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/uploads/product47.webp`,
   },
 ];
 

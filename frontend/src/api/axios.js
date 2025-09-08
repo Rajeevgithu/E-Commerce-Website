@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const resolvedBaseUrl = `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/api`;
+
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: resolvedBaseUrl,
 });
 
 // Add interceptor to attach token
