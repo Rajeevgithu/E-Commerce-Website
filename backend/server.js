@@ -8,12 +8,28 @@ const app = express();
 connectDB();
 
 // CORS configuration for production
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? [
+      process.env.FRONTEND_URL,
+      'https://your-frontend-domain.vercel.app',
+      'https://*.vercel.app'
+    ].filter(Boolean)
+  : ['http://localhost:5173'];
+
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL, 'https://your-frontend-domain.vercel.app']
-    : 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow server-to-server/no-origin
+    const isAllowed = allowedOrigins.some((o) => {
+      if (o.includes('*')) {
+        const regex = new RegExp('^' + o.replace('.', '\\.').replace('*', '.*') + '$');
+        return regex.test(origin);
+      }
+      return o === origin;
+    });
+    callback(isAllowed ? null : new Error('Not allowed by CORS'));
+  },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
