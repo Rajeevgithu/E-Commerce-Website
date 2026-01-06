@@ -1,52 +1,56 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Product = require('../models/Product');
-const { protect, isAdmin } = require('../middleware/authMiddleware');
+const Product = require("../models/Product");
+const adminAuth = require("../middleware/adminAuth")
+// ===============================
+// PUBLIC ROUTES (NO AUTH REQUIRED)
+// ===============================
 
-// GET /api/products - with optional category and search query
-router.get('/', async (req, res) => {
+// GET /api/products
+// Optional query: ?category=&search=
+router.get("/", async (req, res) => {
   try {
     const { category, search } = req.query;
     const filter = {};
 
-    if (category && category.toLowerCase() !== 'all') {
-      filter.category = { $regex: new RegExp('^' + category + '$', 'i') };
+    if (category && category.toLowerCase() !== "all") {
+      filter.category = { $regex: new RegExp(`^${category}$`, "i") };
     }
 
     if (search) {
-      filter.name = { $regex: search, $options: 'i' };
+      filter.name = { $regex: search, $options: "i" };
     }
 
-    const products = await Product.find(filter);
-    if (products.length === 0) {
-      return res.status(404).json({ message: `No products found in "${category}" category.` });
-    }
-
+    const products = await Product.find(filter).sort({ createdAt: -1 });
     res.json(products);
   } catch (error) {
-    console.error('Product fetch error:', error.message);
-    res.status(500).json({ message: 'Server Error' });
+    console.error("Product fetch error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// GET /api/products/:id - get single product
-router.get('/:id', async (req, res) => {
+// GET /api/products/:id
+router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (product) {
-      res.json(product);
-    } else {
-      res.status(404).json({ message: 'Product not found' });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
     }
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching product" });
   }
 });
 
-// POST /api/products - Admin: Create a new product
-router.post('/', protect, isAdmin, async (req, res) => {
+
+// ===============================
+// ADMIN ROUTES (JWT REQUIRED)
+// ===============================
+
+// POST /api/products
+router.post("/", adminAuth, async (req, res) => {
   try {
-    const { name, price, description, category, image } = req.body;
+    const { name, price, description, category, image, availability } = req.body;
 
     const product = new Product({
       name,
@@ -54,47 +58,49 @@ router.post('/', protect, isAdmin, async (req, res) => {
       description,
       category,
       image,
+      availability,
     });
 
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
   } catch (error) {
-    console.error('Create Product Error:', error.message);
-    res.status(500).json({ message: 'Server Error' });
+    console.error("Create product error:", error.message);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// PUT /api/products/:id - Admin: Update a product
-router.put('/:id', protect, isAdmin, async (req, res) => {
+// PUT /api/products/:id
+router.put("/:id", adminAuth, async (req, res) => {
   try {
-    const { name, price, description, category, image } = req.body;
-
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
 
-    product.name = name || product.name;
-    product.price = price || product.price;
-    product.description = description || product.description;
-    product.category = category || product.category;
-    product.image = image || product.image;
+    product.name = req.body.name ?? product.name;
+    product.price = req.body.price ?? product.price;
+    product.description = req.body.description ?? product.description;
+    product.category = req.body.category ?? product.category;
+    product.image = req.body.image ?? product.image;
+    product.availability = req.body.availability ?? product.availability;
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// DELETE /api/products/:id - Admin: Delete a product
-router.delete('/:id', protect, isAdmin, async (req, res) => {
+// DELETE /api/products/:id
+router.delete("/:id", adminAuth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
 
     await product.deleteOne();
-    res.json({ message: 'Product removed' });
+    res.json({ message: "Product deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 

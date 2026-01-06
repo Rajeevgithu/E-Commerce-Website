@@ -1,22 +1,18 @@
-import axios from 'axios';
-
-const resolvedBaseUrl = `${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/api`;
+// src/api/axios.js
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: resolvedBaseUrl,
+  baseURL: "http://localhost:5000/api",
+  headers: { "Content-Type": "application/json" },
 });
 
-// Add interceptor to attach token
-api.interceptors.request.use(
-  (config) => {
-    const user = JSON.parse(localStorage.getItem("userInfo"));
-    const token = user?.token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 
 export default api;

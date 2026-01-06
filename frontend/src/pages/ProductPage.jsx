@@ -11,7 +11,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "https://e-commerce-website-1-lmr9.onrender.com";
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 
 function ProductPage() {
   const { addToCart } = useCart();

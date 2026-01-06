@@ -1,125 +1,126 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
-const LoginPage = ({ onClose }) => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState(null);
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user"); // user | admin
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const { login } = useAuth(); // ✅ SINGLE SOURCE
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setError("");
     setLoading(true);
 
     try {
-      await axios.post('/api/auth/login', formData);
-      setLoading(false);
-      onClose(); // Close modal on success
-      navigate('/dashboard');
+      // 🔥 Delegate login to AuthContext
+      await login(email, password, role);
+
+      if (role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
       setLoading(false);
-      setError(err.response?.data?.message || 'Login failed');
     }
   };
 
-  const handleOAuth = (provider) => {
-    window.location.href = `/api/auth/${provider}`;
-  };
-
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-md px-4 sm:px-6">
-      <div className="w-full max-w-md bg-white border border-black rounded-xl shadow-md p-6 sm:p-8 relative overflow-y-auto max-h-[90vh]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-md px-4">
+      <div className="w-full max-w-md bg-white border border-black rounded-xl shadow-md p-6 relative">
+        {/* Close */}
         <button
-          onClick={() => navigate('/')}
-          className="absolute top-2 right-3 text-gray-600 hover:text-red-500 text-3xl sm:text-4xl"
+          onClick={() => navigate("/")}
+          className="absolute top-2 right-3 text-gray-600 hover:text-red-500 text-3xl"
         >
           &times;
         </button>
 
-        <h1 className="text-2xl sm:text-3xl font-bold text-black text-center mb-6">Login</h1>
+        <h1 className="text-2xl font-bold text-center mb-6">
+          Login
+        </h1>
+
+        {/* Role Selector */}
+        <div className="flex gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setRole("user")}
+            className={`flex-1 py-2 rounded font-medium ${
+              role === "user"
+                ? "bg-black text-white"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            User
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole("admin")}
+            className={`flex-1 py-2 rounded font-medium ${
+              role === "admin"
+                ? "bg-black text-white"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            Admin
+          </button>
+        </div>
 
         {error && (
-          <div className="mb-4 bg-red-100 text-red-700 p-3 rounded text-center font-medium text-sm sm:text-base">
+          <div className="mb-4 bg-red-100 text-red-700 p-3 rounded text-center">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block mb-1 text-black font-medium text-sm sm:text-base">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-black rounded bg-white text-black focus:outline-none focus:ring-2 focus:ring-black text-sm sm:text-base"
-            />
-          </div>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full px-4 py-2 border border-black rounded"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-          <div>
-            <label className="block mb-1 text-black font-medium text-sm sm:text-base">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-black rounded bg-white text-black focus:outline-none focus:ring-2 focus:ring-black text-sm sm:text-base"
-            />
-          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-2 border border-black rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded text-white font-semibold transition text-sm sm:text-base ${
-              loading ? 'bg-gray-500 cursor-not-allowed' : 'bg-black hover:bg-gray-800'
-            }`}
+            className="w-full py-2 bg-black text-white rounded font-semibold"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? "Logging in..." : `Login as ${role}`}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-black text-sm sm:text-base">
-          Don't have an account?{' '}
-          <Link to="/signup" className="underline hover:text-gray-700">
-            Sign up
-          </Link>
-        </div>
-
-        <div className="mt-6">
-          <div className="flex items-center">
-            <div className="flex-grow border-t border-gray-400"></div>
-            <span className="mx-4 text-gray-600 text-sm">or login with</span>
-            <div className="flex-grow border-t border-gray-400"></div>
-          </div>
-
-          <div className="mt-4 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-            <button
-              onClick={() => handleOAuth('google')}
-              className="flex items-center justify-center gap-2 px-4 py-2 border border-black rounded hover:bg-gray-100"
+        {/* Signup only for USER */}
+        {role === "user" && (
+          <div className="mt-6 text-center text-sm">
+            Don’t have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-semibold underline hover:text-gray-700"
             >
-              <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-              <span className="text-black text-sm font-medium">Google</span>
-            </button>
-
-            <button
-              onClick={() => handleOAuth('facebook')}
-              className="flex items-center justify-center gap-2 px-4 py-2 border border-black rounded hover:bg-gray-100"
-            >
-              <img src="https://www.svgrepo.com/show/448224/facebook.svg" alt="Facebook" className="w-5 h-5" />
-              <span className="text-black text-sm font-medium">Facebook</span>
-            </button>
+              Create one
+            </Link>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

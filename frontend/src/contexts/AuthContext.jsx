@@ -1,79 +1,79 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import api from "../api/axios";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // User object or null
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [loading, setLoading] = useState(true); // Loading user state
-  const [error, setError] = useState(null);
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!token) {
+ // Restore session
+useEffect(() => {
+  const restore = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Decode token safely (no backend call needed)
+      const payload = JSON.parse(atob(token.split(".")[1]));
+
+      // Admin session → trust token + dashboard APIs
+      if (payload.role === "admin") {
+        setUser({
+          id: payload.id,
+          email: payload.email,
+          role: "admin",
+        });
         setLoading(false);
         return;
       }
-      try {
-        setLoading(true);
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/api/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(res.data.user);
-        setError(null);
-      } catch (err) {
-        logout();
-        setError('Session expired. Please log in again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, [token]);
 
-  const login = async (email, password) => {
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'https://e-commerce-website-1-lmr9.onrender.com'}/api/auth/login`, {
-        email,
-        password,
-      });
-      const { token, user } = res.data;
-      localStorage.setItem('token', token);
-      setToken(token);
-      setUser(user);
-      setError(null);
+      // Normal user session → validate with backend
+      const res = await api.get("/auth/me");
+      setUser(res.data.user);
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
-      throw err; // re-throw if you want to handle in UI
+      localStorage.removeItem("token");
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
   };
 
+  restore();
+}, []);
+
+
+  const login = async (email, password, role) => {
+    const endpoint =
+      role === "admin" ? "/admin/login" : "/auth/login";
+
+    const res = await api.post(endpoint, { email, password });
+
+    localStorage.setItem("token", res.data.token);
+    setUser(res.data.user);
+  };
+
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setUser(null);
-    setToken('');
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        token,
         login,
         logout,
-        isAdmin: user?.role === 'admin',
         loading,
-        error,
-        setError,
+        isAdmin: user?.role === "admin",
       }}
     >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-// Custom hook to use auth context
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);

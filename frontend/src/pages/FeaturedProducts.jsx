@@ -4,10 +4,19 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import "swiper/css";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "https://e-commerce-website-1-lmr9.onrender.com"; // Ensure this is your backend URL
+const BASE_URL = import.meta.env.VITE_API_URL;
+
+
 
 const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
-  if (!products.length || !sectionBackgrounds.length) return null;
+if (!products.length) {
+  return <p className="text-center py-20 text-gray-400">No products found</p>;
+}
+
+if (!sectionBackgrounds.length) {
+  return <p className="text-center py-20 text-gray-400">No background set</p>;
+}
+
 
   return (
     <section
@@ -39,16 +48,26 @@ const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
           loop={true}
           grabCursor
         >
-          {products.map((product) => {
-            const imgSrc = (() => {
-              const img = product.image;
-              if (!img) return '';
-              if (img.startsWith('http')) return img;
-              const path = img.startsWith('/uploads') || img.includes('/uploads/')
-                ? img.replace(/^\/+/, '')
-                : `uploads/${img.replace(/^\/+/, '')}`;
-              return `${BASE_URL}/${path}`;
-            })();
+    {products.map((product) => {
+  const imgSrc = (() => {
+    // ✅ Product image can be array or string
+    const img = Array.isArray(product.image)
+      ? product.image[0]
+      : product.image;
+
+    if (!img) return "";
+
+    // ✅ Absolute URL (already hosted)
+    if (img.startsWith("http")) return img;
+
+    // ✅ Local upload path
+    const normalizedPath = img.startsWith("/uploads")
+      ? img.replace(/^\/+/, "")
+      : `uploads/${img.replace(/^\/+/, "")}`;
+
+    return `${BASE_URL}/${normalizedPath}`;
+  })();
+
 
             return (
               <SwiperSlide key={product._id || product.id}>
@@ -64,7 +83,8 @@ const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
                     />
                     <div className="absolute inset-0 bg-black opacity-40" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <Link to={`/all-products/${product._id || product.id}`} />
+                      <Link to={`/product/${product._id}`}
+ />
                     </div>
                   </div>
                   <div className="p-6 flex-1 flex flex-col justify-between text-left">
@@ -81,7 +101,8 @@ const FeaturedProducts = ({ products = [], sectionBackgrounds = [] }) => {
                         ₹{typeof product.price === "number" ? product.price.toFixed(2) : "N/A"}
                       </span>
                       <Link
-                        to={`/all-products/${product._id || product.id}`}
+                       to={`/product/${product._id}`}
+
                         className="bg-gray-900 text-white py-2 px-4 rounded-full font-bold 
               hover:bg-gray-800 transition 
               border-2 border-transparent hover:border-yellow-500 

@@ -1,47 +1,37 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
+const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const multerS3 = require("multer-s3");
+const { S3Client } = require("@aws-sdk/client-s3");
+const adminAuth = require("../middleware/adminAuth");
 
-// Ensure upload folder exists
-const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename(req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`);
+// AWS SDK v3 CLIENT
+const s3 = new S3Client({
+  region: process.env.AWS_REGION || "us-east-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
   },
 });
 
-// File filter: Only allow images
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|webp/;
-  const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mime = allowedTypes.test(file.mimetype);
-  if (ext && mime) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only images are allowed'));
-  }
-};
-
+// Multer S3 (ACL REMOVED)
 const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  storage: multerS3({
+    s3,
+    bucket: "text-tech-products-images",
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: (req, file, cb) => {
+      cb(null, `products/${Date.now()}-${file.originalname}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// Upload endpoint
-router.post('/', upload.single('image'), (req, res) => {
-  res.json({ imageUrl: `/uploads/${req.file.filename}` });
+// Upload route (admin only)
+router.post("/", adminAuth, upload.single("image"), (req, res) => {
+  res.json({
+    imageUrl: req.file.location,
+  });
 });
 
 module.exports = router;

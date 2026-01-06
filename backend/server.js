@@ -1,61 +1,65 @@
-const express = require('express');
-const path = require('path');
-const connectDB = require('./config/db');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const path = require("path");          // ✅ ADD THIS
+require("dotenv").config();
+
+const connectDB = require("./config/db");
 
 const app = express();
+
+// ================== DATABASE ==================
 connectDB();
 
-// CORS configuration for production
-const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? [
-      process.env.FRONTEND_URL,
-      'https://your-frontend-domain.vercel.app',
-      'https://*.vercel.app'
-    ].filter(Boolean)
-  : ['http://localhost:5173'];
+// ================== CORS ==================
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (process.env.ALLOW_ALL_ORIGINS === 'true') {
-      return callback(null, true);
-    }
-    if (!origin) return callback(null, true); // allow server-to-server/no-origin
-    const isAllowed = allowedOrigins.some((o) => {
-      if (o.includes('*')) {
-        const regex = new RegExp('^' + o.replace('.', '\\.').replace('*', '.*') + '$');
-        return regex.test(origin);
-      }
-      return o === origin;
-    });
-    callback(isAllowed ? null : new Error('Not allowed by CORS'));
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  optionsSuccessStatus: 200,
-};
-
-app.use(cors(corsOptions));
+// ================== MIDDLEWARE ==================
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded images statically
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+// ✅ ADD THIS BLOCK (STATIC FILES)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/products', require('./routes/productRoutes'));
-app.use('/api/cart', require('./routes/cartRoutes'));
-app.use('/api/upload', require('./routes/uploadRoutes')); // <-- Image Upload Route
+// ================== ROUTES ==================
 
-// Add this line for auth routes
-app.use('/api/auth', require('./routes/authRoutes'));
+// 🔐 ADMIN AUTH
+app.use("/api/admin", require("./routes/adminAuthRoutes"));
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+// 📊 ADMIN DASHBOARD
+app.use("/api/admin/dashboard", require("./routes/adminDashboardRoutes"));
+app.use("/api/admin/users", require("./routes/adminUserRoutes"));
+
+// 🛍 PRODUCTS
+app.use("/api/products", require("./routes/productRoutes"));
+
+// 📰 BLOGS
+app.use("/api/blogs", require("./routes/blogRoutes"));
+
+// 📷 IMAGE UPLOAD
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+
+app.use("/api/cart", require("./routes/cartRoutes"));
+
+// 👤 USER AUTH
+app.use("/api/auth", require("./routes/authRoutes"));
+
+// ================== HEALTH CHECK ==================
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    message: "Server is running",
+    environment: process.env.NODE_ENV || "development",
+  });
 });
 
+// ================== SERVER ==================
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

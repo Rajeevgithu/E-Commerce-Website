@@ -1,75 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCalendarAlt, FaUser, FaClock, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-const blogPosts = [
-  {
-    id: 1,
-    title: 'The Future of Textile Testing',
-    excerpt: 'Exploring the latest advancements in textile testing technology and their impact on the industry.',
-    content: `The textile industry is undergoing a significant transformation with the introduction of advanced testing technologies. These innovations are not only improving the accuracy and efficiency of testing processes but are also helping manufacturers meet increasingly stringent quality standards.
-
-Key developments include:
-- Automated testing systems that reduce human error
-- AI-powered quality control systems
-- Real-time data analysis and reporting
-- Sustainable testing methods that reduce environmental impact
-
-These advancements are helping companies maintain high quality standards while reducing costs and improving efficiency.`,
-    author: 'Dr. Sarah Johnson',
-    date: 'March 15, 2024',
-    category: 'Technology',
-    image: 'https://images.unsplash.com/photo-1581092921461-39b9d08a9b21?w=500',
-    readTime: '5 min read'
-  },
-  {
-    id: 2,
-    title: 'Quality Control Best Practices',
-    excerpt: 'Essential guidelines for maintaining high standards in textile quality control.',
-    content: `Quality control is a critical aspect of textile manufacturing that directly impacts product reliability and customer satisfaction. This comprehensive guide covers the essential practices that every textile manufacturer should implement.
-
-Key areas include:
-- Standard operating procedures
-- Quality metrics and KPIs
-- Testing protocols
-- Documentation requirements
-- Staff training and certification
-
-By following these best practices, manufacturers can ensure consistent quality across their product lines.`,
-    author: 'Michael Chen',
-    date: 'March 10, 2024',
-    category: 'Quality Control',
-    image: 'https://images.unsplash.com/photo-1581092921461-39b9d08a9b21?w=500',
-    readTime: '4 min read'
-  },
-  {
-    id: 3,
-    title: 'Sustainable Testing Methods',
-    excerpt: 'How eco-friendly testing methods are revolutionizing the textile industry.',
-    content: `Sustainability is becoming increasingly important in the textile industry, and testing methods are no exception. This article explores how manufacturers are adopting eco-friendly testing practices without compromising on quality or accuracy.
-
-Topics covered:
-- Water-saving testing techniques
-- Energy-efficient equipment
-- Waste reduction strategies
-- Green certification standards
-- Environmental impact assessment
-
-These sustainable practices not only benefit the environment but can also lead to cost savings and improved market positioning.`,
-    author: 'Emma Thompson',
-    date: 'March 5, 2024',
-    category: 'Sustainability',
-    image: 'https://images.unsplash.com/photo-1581092921461-39b9d08a9b21?w=500',
-    readTime: '6 min read'
-  }
-];
-
-const categories = ['All', 'Technology', 'Quality Control', 'Sustainability'];
+const categories = ['All', 'Technology', 'Quality Control', 'Sustainability', 'Industry News', 'Innovation', 'Other'];
 
 const Blogs = () => {
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedPost, setSelectedPost] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/blogs")
+        if (response.ok) {
+          const data = await response.json();
+
+const formattedBlogs = data
+  .filter(blog => blog.published === true) // ✅ published only
+  .map((blog) => ({
+    id: blog._id,
+    title: blog.title,
+    excerpt: blog.excerpt || blog.content.substring(0, 100) + '...',
+    content: blog.content,
+    author: blog.author || 'Admin',
+    date: blog.date || blog.createdAt,
+    category: categories.includes(blog.category)
+      ? blog.category
+      : 'Other',
+    image: Array.isArray(blog.image)
+      ? blog.image[0]
+      : blog.image || 'https://images.unsplash.com/photo-1581092921461-39b9d08a9b21?w=500',
+    readTime: blog.readTime || '3 min read'
+  }));
+
+setBlogPosts(formattedBlogs);
+
+        } else {
+          setError('Failed to fetch blogs');
+        }
+      } catch (err) {
+        setError('Error fetching blogs');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchBlogs();
+  }, []);
+
+  if (loading) return <div className="flex justify-center items-center h-64"><p>Loading blogs...</p></div>;
+  if (error) return <div className="flex justify-center items-center h-64"><p className="text-red-500">{error}</p></div>;
 
   const filteredPosts = selectedCategory === 'All'
     ? blogPosts
@@ -118,7 +102,7 @@ const Blogs = () => {
         </div>
 
         {/* Featured Post */}
-        {selectedCategory === 'All' && (
+        {selectedCategory === 'All' && blogPosts.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -301,4 +285,4 @@ const Blogs = () => {
   );
 };
 
-export default Blogs; 
+export default Blogs;
