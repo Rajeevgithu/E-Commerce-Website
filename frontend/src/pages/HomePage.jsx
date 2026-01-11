@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
-
 import api from "../api/axios";
-import FeaturesSection from "./Features";
-import FeaturedProducts from "./FeaturedProducts";
 import banner from "../assets/images/sdc-banner.jpg";
-
-const sectionBackgrounds = [
-  "https://images.unsplash.com/photo-1518770660439-4636190af475",
-];
 
 export default function HomePage() {
   const [products, setProducts] = useState([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(true);
 
   /* ================= FETCH PRODUCTS ================= */
@@ -33,22 +23,6 @@ export default function HomePage() {
     fetchProducts();
   }, []);
 
-  /* ================= HERO SLIDES ================= */
-  const heroImages = products.slice(0, 3).map((p, i) => ({
-    id: i,
-    title: p.name,
-    subtitle: p.description,
-    image: Array.isArray(p.image) ? p.image[0] : p.image,
-  }));
-
-  useEffect(() => {
-    if (!heroImages.length) return;
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [heroImages]);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500">
@@ -57,118 +31,158 @@ export default function HomePage() {
     );
   }
 
-  /* ================= UI ================= */
   return (
-    <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full">
 
-      {/* ================= HERO ================= */}
-      <section className="relative h-[480px] rounded-2xl overflow-hidden mt-4">
-        {heroImages.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100 z-10" : "opacity-0"
-            }`}
-            style={{
-              backgroundImage: `url(${slide.image})`,
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-            }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70 flex items-center justify-center text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-white px-6 max-w-3xl backdrop-blur-md bg-white/10 rounded-xl p-8"
-              >
-                <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
-                  {slide.title}
-                </h1>
-                <p className="text-lg md:text-xl mb-6 text-gray-200">
-                  {slide.subtitle}
-                </p>
-                <Link
-                  to="/all-products"
-                  className="inline-block px-8 py-3 rounded-full bg-yellow-500 text-black font-semibold hover:bg-yellow-400 transition"
-                >
-                  Explore Products
-                </Link>
-              </motion.div>
-            </div>
-          </div>
-        ))}
-
-        {/* Controls */}
-        <button
-          onClick={() =>
-            setCurrentSlide(
-              (currentSlide - 1 + heroImages.length) % heroImages.length
-            )
-          }
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 hover:bg-white/30 rounded-full text-white"
-        >
-          <ChevronLeft />
-        </button>
-        <button
-          onClick={() =>
-            setCurrentSlide((currentSlide + 1) % heroImages.length)
-          }
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/20 hover:bg-white/30 rounded-full text-white"
-        >
-          <ChevronRight />
-        </button>
-      </section>
-
-      <Divider />
-
-      {/* ================= FEATURED PRODUCTS ================= */}
-      <FeaturedProducts
-        products={products.slice(0, 8)}
-        sectionBackgrounds={sectionBackgrounds}
-      />
-
-      <Divider />
-
-      {/* ================= BRAND BANNER ================= */}
+      {/* ================= INDUSTRIAL HERO ================= */}
       <section
-        className="w-full h-[420px] bg-cover bg-center flex items-center justify-center rounded-xl"
+        className="relative w-full h-[80vh] min-h-[520px] bg-cover bg-center flex items-center"
         style={{ backgroundImage: `url(${banner})` }}
       >
-        <div className="bg-black/60 backdrop-blur-md px-8 py-6 rounded-xl text-white text-center">
-          <h2 className="text-3xl font-bold mb-2">
-            Precision Testing Solutions
-          </h2>
-          <p className="text-lg text-gray-200 max-w-xl">
-            Trusted laboratory & textile testing instruments with unmatched
-            reliability.
-          </p>
+        <div className="absolute inset-0 bg-black/65" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-3xl"
+          >
+            <h1 className="text-4xl md:text-5xl xl:text-6xl font-extrabold leading-tight mb-6">
+              Industrial Machinery & Engineering Solutions
+            </h1>
+
+            <p className="text-lg md:text-xl text-gray-200 mb-8">
+              Precision-engineered machinery designed for reliability,
+              performance, and long-term industrial use.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                to="/all-products"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-lg 
+                bg-yellow-500 text-black font-semibold text-lg 
+                hover:bg-yellow-400 transition"
+              >
+                Explore Machinery
+              </Link>
+
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center px-8 py-4 rounded-lg 
+                border-2 border-white text-white font-semibold text-lg 
+                hover:bg-white hover:text-black transition"
+              >
+                Request a Quote
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      <Divider />
+      <SectionDivider />
 
-      <FeaturesSection />
+      {/* ================= VALUE PROPOSITION ================= */}
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Reliable Machinery for Industrial Excellence
+            </h2>
 
-      {/* ================= FLOATING ACTIONS ================= */}
-      <div className="fixed right-4 bottom-20 flex flex-col gap-4 z-50">
-        <a href="https://wa.me/77560387" target="_blank" rel="noreferrer">
-          <FaWhatsapp className="text-green-500 text-4xl hover:scale-110 transition" />
-        </a>
-        <a href="tel:7756038758">
-          <FaPhoneAlt className="text-green-500 text-4xl hover:scale-110 transition" />
-        </a>
-      </div>
+            <p className="text-gray-600 text-lg mb-6">
+              We supply high-quality industrial machinery and equipment tailored
+              to meet the demands of manufacturing, testing, and processing
+              industries.
+            </p>
+
+            <ul className="space-y-4 text-gray-700">
+              <li>✔ Industry-grade build quality</li>
+              <li>✔ Custom solutions & technical support</li>
+              <li>✔ Trusted by professionals nationwide</li>
+            </ul>
+          </div>
+
+          <div className="bg-gray-100 rounded-2xl p-10 text-center shadow">
+            <h3 className="text-2xl font-semibold mb-4">
+              Need a Custom Requirement?
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Share your specifications and our experts will assist you with
+              the right solution.
+            </p>
+            <Link
+              to="/contact"
+              className="inline-block px-6 py-3 rounded-md bg-gray-900 text-white 
+              hover:bg-gray-800 transition"
+            >
+              Contact Our Team
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <SectionDivider />
+
+      {/* ================= FEATURED MACHINERY ================= */}
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+          Featured Machinery
+        </h2>
+
+        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {products.slice(0, 6).map((product) => {
+            const img = Array.isArray(product.image)
+              ? product.image[0]
+              : product.image;
+
+            const imgSrc = img?.startsWith("http")
+              ? img
+              : `${import.meta.env.VITE_API_URL}/${img?.replace(/^\/+/, "")}`;
+
+            return (
+              <Link
+                key={product._id}
+                to={`/product/${product._id}`}
+                className="group bg-white rounded-xl border border-gray-200 
+                hover:shadow-xl transition overflow-hidden"
+              >
+                <div className="h-56 flex items-center justify-center bg-gray-50">
+                  <img
+                    src={imgSrc}
+                    alt={product.name}
+                    className="max-h-full object-contain group-hover:scale-105 transition"
+                  />
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {product.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-3">
+                    {product.description}
+                  </p>
+
+                  <div className="mt-4 text-yellow-600 font-semibold">
+                    View Details →
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <SectionDivider />
     </div>
   );
 }
 
-/* ================= DIVIDER ================= */
-function Divider() {
+/* ================= SECTION DIVIDER ================= */
+function SectionDivider() {
   return (
-    <div className="relative my-14">
-      <div className="mx-auto w-1/3 border-t-4 border-yellow-500"></div>
+    <div className="flex justify-center my-20">
+      <div className="w-24 h-1 bg-yellow-500 rounded-full" />
     </div>
   );
 }

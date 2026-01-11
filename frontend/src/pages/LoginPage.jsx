@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user"); // user | admin
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { login } = useAuth(); // ✅ SINGLE SOURCE
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,108 +17,94 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // 🔥 Delegate login to AuthContext
-      await login(email, password, role);
-
-      if (role === "admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else {
-        navigate("/", { replace: true });
-      }
+      // 🔒 Admin-only login
+      await login(email, password, "admin");
+      navigate("/admin/dashboard", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Invalid admin credentials");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-md px-4">
-      <div className="w-full max-w-md bg-white border border-black rounded-xl shadow-md p-6 relative">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 relative">
+
         {/* Close */}
         <button
           onClick={() => navigate("/")}
-          className="absolute top-2 right-3 text-gray-600 hover:text-red-500 text-3xl"
+          className="absolute top-3 right-4 text-gray-500 hover:text-red-500 text-3xl"
+          aria-label="Close login"
         >
           &times;
         </button>
 
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Login
-        </h1>
-
-        {/* Role Selector */}
-        <div className="flex gap-2 mb-4">
-          <button
-            type="button"
-            onClick={() => setRole("user")}
-            className={`flex-1 py-2 rounded font-medium ${
-              role === "user"
-                ? "bg-black text-white"
-                : "bg-gray-200 text-black"
-            }`}
-          >
-            User
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole("admin")}
-            className={`flex-1 py-2 rounded font-medium ${
-              role === "admin"
-                ? "bg-black text-white"
-                : "bg-gray-200 text-black"
-            }`}
-          >
-            Admin
-          </button>
+        {/* Header */}
+        <div className="px-8 pt-10 pb-6 text-center border-b border-gray-200">
+          <h1 className="text-2xl font-bold text-gray-900">
+            Admin Login
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Authorized personnel only
+          </p>
         </div>
 
-        {error && (
-          <div className="mb-4 bg-red-100 text-red-700 p-3 rounded text-center">
-            {error}
-          </div>
-        )}
+        {/* Body */}
+        <div className="px-8 py-8">
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-4 py-2 border border-black rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          {error && (
+            <div className="mb-5 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg text-sm text-center">
+              {error}
+            </div>
+          )}
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-4 py-2 border border-black rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Admin Email
+              </label>
+              <input
+                type="email"
+                placeholder="admin@company.com"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg 
+                focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-black text-white rounded font-semibold"
-          >
-            {loading ? "Logging in..." : `Login as ${role}`}
-          </button>
-        </form>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg 
+                focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-        {/* Signup only for USER */}
-        {role === "user" && (
-          <div className="mt-6 text-center text-sm">
-            Don’t have an account?{" "}
-            <Link
-              to="/signup"
-              className="font-semibold underline hover:text-gray-700"
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-lg bg-gray-900 text-white font-semibold 
+              hover:bg-gray-800 transition disabled:opacity-60"
             >
-              Create one
-            </Link>
-          </div>
-        )}
+              {loading ? "Authenticating..." : "Login to Admin Panel"}
+            </button>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="px-8 pb-6 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} Text Tech Enterprises
+        </div>
       </div>
     </div>
   );

@@ -1,207 +1,188 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/images/Logo.png";
 import { IoMdSearch } from "react-icons/io";
-import { FaCartShopping, FaCaretDown } from "react-icons/fa6";
-import { useCart } from "../contexts/CartContext";
-import { useState } from "react";
+import { FaCaretDown } from "react-icons/fa6";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
-import { COLORS } from "../theme/colors";
+import { useState } from "react";
 
 const Menu = [
   { id: 1, name: "Home", link: "/" },
   { id: 2, name: "About Us", link: "/about-us" },
-  { id: 3, name: "Contact Us", link: "/contact" },
+  { id: 3, name: "Contact", link: "/contact" },
 ];
 
-const DropdownLinks1 = [
-  { id: 1, title: "Consumable Items", link: "/all-products/consumable-items" },
-  { id: 2, title: "Testing Products", link: "/all-products/testing-products" },
-  { id: 3, title: "Paint & Coating", link: "/all-products/paint-and-coating" },
+const ProductsMenu = [
+  { id: 1, name: "Consumable Items", link: "/all-products/consumable-items" },
+  { id: 2, name: "Testing Products", link: "/all-products/testing-products" },
+  { id: 3, name: "Paint & Coating", link: "/all-products/paint-and-coating" },
 ];
 
-const DropdownLinks2 = [
-  { id: 1, name: "Our Gallery", link: "/our-gallery" },
-  { id: 2, name: "Blogs", link: "/blogs" },
+const InsightsMenu = [
+  { id: 1, name: "Blogs", link: "/blogs" },
+  { id: 2, name: "Gallery", link: "/our-gallery" },
 ];
 
 const Navbar = () => {
-  const { cart } = useCart();
-  const totalItems = (cart || []).reduce((sum, item) => sum + item.quantity, 0);
-  const [isOpen, setIsOpen] = useState(false);
-  const [showProducts, setShowProducts] = useState(false);
-  const [showNews, setShowNews] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchInput.trim()) {
       navigate(`/all-products?query=${encodeURIComponent(searchInput.trim())}`);
+      setSearchInput("");
     }
   };
 
   return (
-    <div className="shadow-md relative z-40">
-      {/* ================= TOP NAVBAR ================= */}
-      <div style={{ backgroundColor: COLORS.navbarTopBg }} className="py-2">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex gap-2 items-center text-white font-bold text-xl">
-            <img src={Logo} alt="Logo" className="w-8" />
-            <span className="hidden sm:inline">Text Tech Enterprises</span>
-            <span className="sm:hidden">TTE</span>
-          </div>
+    <header className="w-full sticky top-0 z-50 bg-white border-b border-gray-200">
 
-          <div className="flex items-center gap-3">
-            {/* Search – NO HOVER EFFECT */}
-            <div className="relative hidden md:block">
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={handleSearch}
-                className="w-[200px] rounded-full px-3 py-1 border outline-none"
-              />
-              <IoMdSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            </div>
+      {/* ================= TOP BAR ================= */}
+<div className="bg-gray-900 text-white">
+  <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
 
-            {/* Cart */}
-            <Link
-              to="/cart"
-              style={{ backgroundColor: COLORS.buttonPrimaryBg }}
-              className="relative px-4 py-1 rounded-full flex items-center gap-2 font-medium transition"
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  COLORS.buttonPrimaryHover)
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  COLORS.buttonPrimaryBg)
-              }
-            >
-              <span className="hidden sm:inline">Cart</span>
-              <FaCartShopping />
-              {totalItems > 0 && (
-                <span
-                  style={{ backgroundColor: COLORS.danger }}
-                  className="absolute -top-2 -right-2 text-xs w-5 h-5 rounded-full flex items-center justify-center text-white"
-                >
-                  {totalItems}
-                </span>
-              )}
-            </Link>
+    {/* Logo */}
+    <Link to="/" className="flex items-center gap-3">
+      <img src={Logo} alt="Text Tech Enterprises" className="w-8" />
+      <span className="font-semibold text-lg hidden sm:block">
+        Text Tech Enterprises
+      </span>
+    </Link>
 
-            {/* Login */}
-            <NavLink
-              to="/login"
-              className="px-3 py-1 rounded-md border text-white transition"
-              style={{ borderColor: COLORS.accent }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = COLORS.accent;
-                e.currentTarget.style.color = COLORS.textPrimary;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = COLORS.textInverse;
-              }}
-            >
-              Login
-            </NavLink>
+    {/* Right Actions */}
+    <div className="flex items-center gap-4">
 
-            {/* Mobile Toggle */}
-            <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-white">
-              {isOpen ? <IoClose size={22} /> : <HiMenuAlt3 size={22} />}
-            </button>
-          </div>
-        </div>
+      {/* Search (Desktop only) */}
+      <div className="hidden md:block relative">
+        <input
+          type="text"
+          placeholder="Search machinery…"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={handleSearch}
+          className="w-56 px-4 py-2 rounded-full text-sm text-gray-900 outline-none"
+        />
+        <IoMdSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
       </div>
 
-      {/* ================= MAIN NAVBAR (DESKTOP) ================= */}
-      <div
-        className="hidden md:flex justify-center border-b"
-        style={{ backgroundColor: COLORS.navbarMainBg, borderColor: COLORS.navbarBorder }}
+      {/* Admin Login (Desktop only) */}
+      <NavLink
+        to="/login"
+        className="hidden md:inline-flex items-center px-5 py-2 
+        border border-yellow-500 text-yellow-500 
+        rounded-lg font-semibold text-sm
+        hover:bg-yellow-500 hover:text-black transition"
       >
-        <ul className="flex gap-6">
-          {Menu.map((item) => (
-            <li key={item.id}>
+        Admin Login
+      </NavLink>
+
+      {/* Mobile Menu Toggle */}
+      <button
+        className="md:hidden text-white"
+        onClick={() => setMobileOpen(!mobileOpen)}
+      >
+        {mobileOpen ? <IoClose size={22} /> : <HiMenuAlt3 size={22} />}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+      {/* ================= MAIN NAV (DESKTOP) ================= */}
+      <nav className="hidden md:block bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <ul className="flex items-center gap-8">
+
+            {Menu.map((item) => (
+              <li key={item.id}>
+                <NavLink
+                  to={item.link}
+                  className={({ isActive }) =>
+                    `py-4 font-medium transition ${
+                      isActive
+                        ? "text-yellow-600"
+                        : "text-gray-700 hover:text-yellow-600"
+                    }`
+                  }
+                >
+                  {item.name}
+                </NavLink>
+              </li>
+            ))}
+
+            {/* Products Dropdown */}
+            <li className="relative group">
+              <span className="py-4 font-medium text-gray-700 hover:text-yellow-600 cursor-pointer flex items-center gap-1">
+                Products <FaCaretDown size={12} />
+              </span>
+              <div className="absolute left-0 top-full hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-md w-56">
+                {ProductsMenu.map((item) => (
+                  <NavLink
+                    key={item.id}
+                    to={item.link}
+                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+              </div>
+            </li>
+
+            {/* Insights Dropdown */}
+            <li className="relative group">
+              <span className="py-4 font-medium text-gray-700 hover:text-yellow-600 cursor-pointer flex items-center gap-1">
+                Insights <FaCaretDown size={12} />
+              </span>
+              <div className="absolute left-0 top-full hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-md w-48">
+                {InsightsMenu.map((item) => (
+                  <NavLink
+                    key={item.id}
+                    to={item.link}
+                    className="block px-5 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* ================= MOBILE MENU ================= */}
+      {mobileOpen && (
+        <div className="md:hidden bg-white border-t border-gray-200">
+          <div className="px-6 py-4 space-y-4">
+            {[...Menu, { name: "Blogs", link: "/blogs" }].map((item, i) => (
               <NavLink
+                key={i}
                 to={item.link}
-                className={({ isActive }) =>
-                  `px-4 py-3 inline-block font-medium transition`
-                }
-                style={({ isActive }) => ({
-                  color: isActive
-                    ? COLORS.navbarActive
-                    : COLORS.navbarLink,
-                })}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = COLORS.navbarLinkHover)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = COLORS.navbarLink)
-                }
+                onClick={() => setMobileOpen(false)}
+                className="block text-gray-700 font-medium"
               >
                 {item.name}
               </NavLink>
-            </li>
-          ))}
+            ))}
 
-          {/* All Products */}
-          <li className="group relative">
-            <span
-              className="flex items-center gap-1 px-4 py-3 cursor-pointer font-medium"
-              style={{ color: COLORS.navbarLink }}
-            >
-              All Products <FaCaretDown />
-            </span>
-            <div className="absolute hidden group-hover:block bg-white shadow-md rounded-md w-[200px]">
-              {DropdownLinks1.map((item) => (
+            <div className="pt-4 border-t">
+              <p className="text-sm font-semibold mb-2">Products</p>
+              {ProductsMenu.map((item) => (
                 <NavLink
                   key={item.id}
                   to={item.link}
-                  className="block px-4 py-2 transition"
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = COLORS.accent)
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "transparent")
-                  }
-                >
-                  {item.title}
-                </NavLink>
-              ))}
-            </div>
-          </li>
-
-          {/* Latest News */}
-          <li className="group relative">
-            <span
-              className="flex items-center gap-1 px-4 py-3 cursor-pointer font-medium"
-              style={{ color: COLORS.navbarLink }}
-            >
-              Latest News <FaCaretDown />
-            </span>
-            <div className="absolute hidden group-hover:block bg-white shadow-md rounded-md w-[200px]">
-              {DropdownLinks2.map((item) => (
-                <NavLink
-                  key={item.id}
-                  to={item.link}
-                  className="block px-4 py-2 transition"
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = COLORS.accent)
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = "transparent")
-                  }
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm text-gray-600 py-1"
                 >
                   {item.name}
                 </NavLink>
               ))}
             </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </header>
   );
 };
 

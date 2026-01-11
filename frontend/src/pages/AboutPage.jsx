@@ -3,92 +3,129 @@ import aboutUsImage from "../assets/images/about-us.jpg";
 
 function AboutPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-br from-white to-gray-100">
-      {/* Introduction */}
-      <section className="mb-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        <div>
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-indigo-700">
-            Who We Are
-          </h2>
-          <p className="text-base sm:text-lg text-gray-600 mb-4 leading-relaxed">
-            Text Tech Enterprises is a highly renowned supplier and importer in
-            the textile industry and testing labs. Our goal is to provide
-            cutting-edge quality control solutions to empower businesses through
-            precision and innovation.
-          </p>
-          <p className="text-base sm:text-lg text-gray-600 leading-relaxed">
-            We specialize in premium industrial machinery and tools, ensuring
-            our clients operate with confidence and accuracy. Each solution we
-            provide is built on a foundation of trust, transparency, and
-            technological excellence.
-          </p>
-        </div>
-        <div className="max-w-md w-full mx-auto md:mx-0">
-          <img
-            src={aboutUsImage}
-            alt="About Text Tech Enterprises"
-            className="rounded-2xl shadow-lg w-full object-cover max-h-[500px]"
-          />
+    <div className="w-full bg-white">
+
+      {/* ================= HERO / INTRO ================= */}
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
+
+          {/* Text */}
+          <div>
+            <h1 className="text-3xl md:text-4xl xl:text-5xl font-bold text-gray-900 mb-6">
+              About Text Tech Enterprises
+            </h1>
+
+            <p className="text-gray-600 text-lg leading-relaxed mb-5">
+              Text Tech Enterprises is a trusted supplier and importer of
+              industrial machinery and textile testing instruments, serving
+              manufacturing units and testing laboratories with precision-driven
+              solutions.
+            </p>
+
+            <p className="text-gray-600 text-lg leading-relaxed">
+              Our focus is on delivering reliable, high-performance equipment
+              that enables businesses to maintain quality, accuracy, and
+              operational excellence.
+            </p>
+          </div>
+
+          {/* Image */}
+          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200 shadow-sm">
+            <img
+              src={aboutUsImage}
+              alt="Text Tech Enterprises facility and machinery"
+              className="rounded-xl w-full h-[420px] object-cover"
+            />
+          </div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="h-1 w-2/3 mx-auto my-12 bg-gradient-to-r from-indigo-500 via-white to-indigo-500 animate-pulse rounded-full" />
+      <SectionDivider />
 
-      {/* Vision Section */}
-      <section className="text-center mb-20 px-2">
-        <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-indigo-700">
-          Vision for the Future
+      {/* ================= VALUE PROPOSITION ================= */}
+      <section className="max-w-6xl mx-auto px-6 py-20 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          What We Stand For
         </h2>
-        <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-          Looking ahead, Text Tech Enterprises aspires to expand globally,
-          making a lasting impact on industries and communities. Through ethical
-          practices and transparent operations, we continue to redefine
-          standards with innovation, sustainability, and enduring quality.
+
+        <p className="text-gray-600 text-lg max-w-4xl mx-auto leading-relaxed">
+          We help industries achieve consistency and compliance by supplying
+          machinery that meets international quality standards. Our approach is
+          rooted in technical expertise, ethical business practices, and
+          long-term client partnerships.
         </p>
       </section>
 
-      {/* Divider */}
-      <div className="h-1 w-2/3 mx-auto my-12 bg-gradient-to-r from-indigo-500 via-white to-indigo-500 animate-pulse rounded-full" />
+      <SectionDivider />
 
-      {/* Commitment Cards */}
-      <section className="mb-16 px-2">
-        <h2 className="text-3xl sm:text-4xl font-bold text-center mb-10 text-indigo-700">
+      {/* ================= VISION ================= */}
+      <section className="max-w-6xl mx-auto px-6 py-20 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          Vision for the Future
+        </h2>
+
+        <p className="text-gray-600 text-lg max-w-4xl mx-auto leading-relaxed">
+          Our vision is to expand globally while maintaining the trust we have
+          built with our clients. By continuously investing in innovation,
+          sustainable practices, and advanced technologies, we aim to redefine
+          industrial quality standards worldwide.
+        </p>
+      </section>
+
+      <SectionDivider />
+
+      {/* ================= COMMITMENTS ================= */}
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-14">
           Our Commitment
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Quality Assurance",
-              desc: "We prioritize high-performance products that exceed industry standards.",
-              icon: "🛠️",
-            },
-            {
-              title: "Customer-Centric Approach",
-              desc: "Our customers are the core of our mission. We aim to surpass expectations.",
-              icon: "🤝",
-            },
-            {
-              title: "Innovation & Sustainability",
-              desc: "We drive forward-thinking, eco-conscious solutions for a better future.",
-              icon: "🌱",
-            },
-          ].map((item, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition duration-300 ease-in-out transform hover:-translate-y-1 max-w-sm mx-auto"
-            >
-              <div className="text-4xl mb-3">{item.icon}</div>
-              <h3 className="text-lg font-semibold text-indigo-600 mb-2">
-                {item.title}
-              </h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {item.desc}
-              </p>
-            </div>
-          ))}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          {/* Card 1 */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              Quality Assurance
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              We supply machinery that meets rigorous performance and durability
+              standards, ensuring long-term operational reliability.
+            </p>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              Customer-Focused Solutions
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              Every solution is aligned with customer requirements, supported by
+              technical guidance and responsive service.
+            </p>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm hover:shadow-lg transition">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">
+              Innovation & Responsibility
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              We adopt modern technologies and responsible practices to deliver
+              efficient, future-ready industrial solutions.
+            </p>
+          </div>
+
         </div>
       </section>
+    </div>
+  );
+}
+
+/* ================= SECTION DIVIDER ================= */
+function SectionDivider() {
+  return (
+    <div className="flex justify-center">
+      <div className="w-24 h-1 bg-yellow-500 rounded-full my-6" />
     </div>
   );
 }
