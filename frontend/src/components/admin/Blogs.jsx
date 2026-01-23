@@ -23,7 +23,7 @@ export default function Blogs() {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    image: "",
+    image: null, // FILE, not URL
     published: false,
   });
 
@@ -50,7 +50,7 @@ export default function Blogs() {
     setFormData({
       title: "",
       content: "",
-      image: "",
+      image: null,
       published: false,
     });
     setShowModal(true);
@@ -61,7 +61,7 @@ export default function Blogs() {
     setFormData({
       title: blog.title,
       content: blog.content,
-      image: blog.image,
+      image: null, // optional replacement
       published: blog.published,
     });
     setShowModal(true);
@@ -81,10 +81,11 @@ export default function Blogs() {
   const togglePublish = async (id) => {
     try {
       const blog = blogs.find((b) => b._id === id);
-      const res = await api.put(`/api/blogs/${id}`, {
-        ...blog,
-        published: !blog.published,
-      });
+
+      const form = new FormData();
+      form.append("published", !blog.published);
+
+      const res = await api.put(`/api/blogs/${id}`, form);
 
       setBlogs(
         blogs.map((b) => (b._id === id ? res.data : b))
@@ -94,19 +95,42 @@ export default function Blogs() {
     }
   };
 
+  /* ================= SUBMIT ================= */
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("content", formData.content);
+    data.append("published", formData.published);
+    data.append(
+      "excerpt",
+      formData.content.substring(0, 120) + "..."
+    );
+    data.append(
+      "readTime",
+      Math.ceil(formData.content.split(" ").length / 200) +
+        " min read"
+    );
+    data.append("author", "Admin");
+    data.append("category", "General");
+    data.append(
+      "date",
+      new Date().toISOString().split("T")[0]
+    );
+
+    if (formData.image) {
+      data.append("image", formData.image); // 🔑 MUST MATCH upload.single("image")
+    }
+
     try {
       if (editingBlog) {
-        const res = await api.put(`/api/blogs/${editingBlog._id}`, {
-          ...editingBlog,
-          ...formData,
-          excerpt: formData.content.substring(0, 120) + "...",
-          readTime:
-            Math.ceil(formData.content.split(" ").length / 200) +
-            " min read",
-        });
+        const res = await api.put(
+          `/api/blogs/${editingBlog._id}`,
+          data,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
 
         setBlogs(
           blogs.map((b) =>
@@ -114,18 +138,8 @@ export default function Blogs() {
           )
         );
       } else {
-        const res = await api.post("/api/blogs", {
-          ...formData,
-          image:
-            formData.image ||
-            "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800",
-          author: "Admin",
-          category: "General",
-          excerpt: formData.content.substring(0, 120) + "...",
-          readTime:
-            Math.ceil(formData.content.split(" ").length / 200) +
-            " min read",
-          date: new Date().toISOString().split("T")[0],
+        const res = await api.post("/blogs", data, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
 
         setBlogs([...blogs, res.data]);
@@ -157,7 +171,6 @@ export default function Blogs() {
 
   return (
     <div className="space-y-8">
-
       {/* ================= HEADER ================= */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -333,13 +346,23 @@ export default function Blogs() {
                 }
               />
 
-              <Input
-                label="Image URL"
-                value={formData.image}
-                onChange={(v) =>
-                  setFormData({ ...formData, image: v })
-                }
-              />
+              {/* 🔑 FILE INPUT (NO URL) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Blog Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      image: e.target.files[0],
+                    })
+                  }
+                  className="w-full"
+                />
+              </div>
 
               <label className="flex items-center gap-2 text-sm">
                 <input

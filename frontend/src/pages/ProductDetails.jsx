@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { IoArrowBack } from "react-icons/io5";
 import api from "../api/axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const ProductDetails = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
 
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
+  const [activeImage, setActiveImage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
+const [submitting, setSubmitting] = useState(false);
+const [formStatus, setFormStatus] = useState({ type: "", message: "" });
+
+  
 
   const [formData, setFormData] = useState({
     name: "",
@@ -19,6 +27,10 @@ const ProductDetails = () => {
     message: "",
   });
 
+    useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [id]);
+
   /* ================= FETCH PRODUCT ================= */
   useEffect(() => {
     const fetchProduct = async () => {
@@ -26,217 +38,425 @@ const ProductDetails = () => {
         const res = await api.get(`/products/${id}`);
         setProduct(res.data);
 
-        // Fetch related products (same category)
-        const relatedRes = await api.get("/products");
-        const filtered = relatedRes.data.filter(
-          (p) => p.category === res.data.category && p._id !== res.data._id
+        const images = Array.isArray(res.data.image)
+          ? res.data.image
+          : [res.data.image];
+
+        const formatted = images.map((img) =>
+          img?.startsWith("http")
+            ? img
+            : `${BASE_URL}/${img?.replace(/^\/+/, "")}`
         );
-        setRelated(filtered.slice(0, 3));
-      } catch (err) {
+
+        setActiveImage(formatted[0]);
+
+        const relatedRes = await api.get("/products");
+        setRelated(
+          relatedRes.data.filter(
+            (p) => p.category === res.data.category && p._id !== res.data._id
+          ).slice(0, 3)
+        );
+      } catch {
         setError("Product not found");
       } finally {
         setLoading(false);
       }
     };
+
     fetchProduct();
   }, [id]);
 
-  /* ================= HANDLE FORM ================= */
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  /* ================= FORM ================= */
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    try {
-      await api.post("/enquiries", {
-        ...formData,
-        productId: product._id,
-        productName: product.name,
-      });
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (submitting) return;
 
-      alert("Your enquiry has been sent successfully.");
-      setFormData({ name: "", email: "", phone: "", message: "" });
-    } catch (err) {
-      alert("Failed to send enquiry. Please try again.");
-    }
-  };
+  setSubmitting(true);
+  setFormStatus({ type: "", message: "" });
 
-  if (loading) return <p className="text-center py-20">Loading...</p>;
-  if (error) return <p className="text-center py-20 text-red-500">{error}</p>;
+  try {
+    await api.post("/enquiries", {
+      ...formData,
+      productId: product._id,
+      productName: product.name,
+    });
+
+    setFormStatus({
+      type: "success",
+      message: "Enquiry sent successfully. We will contact you shortly.",
+    });
+
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    });
+
+    // Auto-hide success message
+    setTimeout(() => {
+      setFormStatus({ type: "", message: "" });
+    }, 4000);
+
+  } catch (error) {
+    setFormStatus({
+      type: "error",
+      message: "Failed to send enquiry. Please try again.",
+    });
+  } finally {
+    setSubmitting(false);
+  }
+};
+
+
+  if (loading)
+    return <p className="text-center py-24 text-gray-400">Loading...</p>;
+  if (error)
+    return <p className="text-center py-24 text-red-500">{error}</p>;
   if (!product) return null;
 
-  const img = Array.isArray(product.image)
-    ? product.image[0]
-    : product.image;
-
-  const imgSrc = img?.startsWith("http")
-    ? img
-    : `${BASE_URL}/${img?.replace(/^\/+/, "")}`;
+  const images = Array.isArray(product.image)
+    ? product.image
+    : [product.image];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16">
+    <section className="bg-slate-950 text-white">
+      <div className="max-w-7xl mx-auto px-6 py-10">
 
-      {/* ================= PRODUCT INFO ================= */}
-      <div className="grid md:grid-cols-2 gap-12 mb-20">
-        {/* Image */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow p-6 flex items-center justify-center">
-          <img
-            src={imgSrc}
-            alt={product.name}
-            className="max-h-[420px] object-contain"
-          />
-        </div>
+{/* ================= MOBILE BACK BUTTON ================= */}
+<button
+  onClick={() => navigate(-1)}
+  className="
+    sm:hidden
+    mb-4
+    inline-flex items-center gap-2
+    text-gray-300 text-sm font-medium
+    hover:text-white
+    active:scale-95
+    transition
+  "
+>
+  <IoArrowBack size={18} />
+  Back
+</button>
 
-        {/* Details */}
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {product.name}
-          </h1>
 
-          <p className="text-gray-600 mb-6 leading-relaxed">
-            {product.description}
-          </p>
+{/* ================= PRODUCT ================= */}
+<div
+  className="
+    grid
+    gap-6 sm:gap-14
+    mb-12 sm:mb-28
+    grid-cols-1
+    lg:grid-cols-[480px_1fr]
+  "
+>
 
-          <div className="space-y-2 text-gray-700">
-            <p>
-              <span className="font-semibold">Category:</span>{" "}
-              {product.category}
-            </p>
-            {product.model && (
-              <p>
-                <span className="font-semibold">Model:</span> {product.model}
-              </p>
-            )}
-            {product.application && (
-              <p>
-                <span className="font-semibold">Application:</span>{" "}
-                {product.application}
-              </p>
-            )}
-          </div>
+  {/* IMAGE GALLERY */}
+<div
+  className="
+    rounded-lg sm:rounded-2xl
+    border border-white/10
+    shadow-lg
+    bg-slate-900
+    overflow-hidden
+  "
+>
 
-          <div className="mt-8">
-            <a
-              href="#enquiry"
-              className="inline-block px-8 py-4 rounded-lg bg-yellow-500 
-              text-black font-semibold text-lg hover:bg-yellow-400 transition"
-            >
-              Enquire About This Product
-            </a>
-          </div>
-        </div>
-      </div>
+  {/* MAIN IMAGE */}
+  <div
+    className="
+      h-[260px] sm:h-auto
+      sm:aspect-[4/3] lg:aspect-square
+      bg-white
+      flex items-center justify-center
+      p-2 sm:p-6
+    "
+  >
+    <img
+      src={activeImage}
+      alt={product.name}
+      className="
+        max-h-full max-w-full
+        object-contain
+        cursor-zoom-in
+      "
+      onDoubleClick={() => setPreviewImage(activeImage)}
+    />
+  </div>
 
-      {/* ================= ENQUIRY FORM ================= */}
-      <section id="enquiry" className="max-w-3xl mx-auto mb-24">
-        <h2 className="text-3xl font-bold text-center mb-6">
-          Request More Information
-        </h2>
+  {/* THUMBNAILS */}
+  {images.length > 1 && (
+    <div
+      className="
+        grid
+        grid-cols-4
+        gap-1.5 sm:gap-3
+        p-2 sm:p-4
+        bg-slate-800
+        border-t border-white/10
+        sm:grid-cols-5
+        md:grid-cols-6
+        lg:grid-cols-4
+      "
+    >
+      {images.map((img, i) => {
+        const src = img.startsWith("http")
+          ? img
+          : `${BASE_URL}/${img.replace(/^\/+/, "")}`;
 
-        <p className="text-center text-gray-600 mb-10">
-          Fill out the form below and our team will contact you regarding
-          <span className="font-semibold"> {product.name}</span>.
-        </p>
-
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white border border-gray-200 rounded-2xl shadow p-8 space-y-5"
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border rounded-md focus:ring-2 focus:ring-yellow-500"
-          />
-
-          <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border rounded-md focus:ring-2 focus:ring-yellow-500"
-          />
-
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Phone Number"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-3 border rounded-md focus:ring-2 focus:ring-yellow-500"
-          />
-
-          <textarea
-            name="message"
-            placeholder="Your Requirement / Message"
-            rows="4"
-            value={formData.message}
-            onChange={handleChange}
-            className="w-full px-4 py-3 border rounded-md focus:ring-2 focus:ring-yellow-500"
-          />
-
+        return (
           <button
-            type="submit"
-            className="w-full bg-gray-900 text-white py-3 rounded-md 
-            hover:bg-gray-800 transition font-semibold"
+            key={i}
+            onClick={() => setActiveImage(src)}
+            className={`
+              aspect-square
+              rounded-md sm:rounded-lg
+              bg-white
+              p-1 sm:p-2
+              transition
+              ${
+                activeImage === src
+                  ? "ring-2 ring-orange-500"
+                  : "hover:ring-1 hover:ring-gray-300"
+              }
+            `}
           >
-            Submit Enquiry
+            <img
+              src={src}
+              alt={`thumbnail-${i}`}
+              className="w-full h-full object-contain"
+            />
           </button>
-        </form>
-      </section>
-
-      {/* ================= RELATED PRODUCTS ================= */}
-      {related.length > 0 && (
-        <section>
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Related Machinery
-          </h2>
-
-          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((item) => {
-              const relImg = Array.isArray(item.image)
-                ? item.image[0]
-                : item.image;
-
-              const relImgSrc = relImg?.startsWith("http")
-                ? relImg
-                : `${BASE_URL}/${relImg?.replace(/^\/+/, "")}`;
-
-              return (
-                <Link
-                  key={item._id}
-                  to={`/product/${item._id}`}
-                  className="bg-white border border-gray-200 rounded-xl 
-                  hover:shadow-lg transition overflow-hidden"
-                >
-                  <div className="h-48 bg-gray-50 flex items-center justify-center">
-                    <img
-                      src={relImgSrc}
-                      alt={item.name}
-                      className="max-h-full object-contain"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-semibold text-lg">{item.name}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2 mt-1">
-                      {item.description}
-                    </p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
+        );
+      })}
     </div>
+  )}
+</div>
+{/* ================= DETAILS ================= */}
+<div>
+  {/* PRODUCT NAME */}
+  <h1 className="text-xl sm:text-4xl font-extrabold mb-2 sm:mb-4">
+    {product.name}
+  </h1>
+
+  {/* DESCRIPTION */}
+  <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-4 sm:mb-8">
+    {product.description}
+  </p>
+
+  {/* CATEGORY + MOBILE ENQUIRE (SAME ROW ON MOBILE) */}
+  <div
+    className="
+      flex items-center justify-between
+      sm:block
+      mb-3 sm:mb-0
+      text-gray-300 text-sm sm:text-base
+    "
+  >
+    <p>
+      <span className="font-semibold text-white">Category:</span>{" "}
+      {product.category}
+    </p>
+
+   {/* MOBILE ENQUIRE BUTTON */}
+<a
+  href="#enquiry"
+  className="
+    sm:hidden
+    inline-flex items-center justify-center
+    px-4 py-1.5
+    rounded-md
+    bg-slate-100
+    text-slate-900
+    text-xs font-semibold
+    transition-all duration-200
+
+    /* tap / click feedback */
+    active:ring-2 active:ring-yellow-400/80
+    focus-visible:ring-2 focus-visible:ring-yellow-400/80
+
+    active:scale-[0.96]
+    focus:outline-none
+  "
+>
+  Enquire
+</a>
+
+  </div>
+
+  {/* OTHER DETAILS */}
+  <div className="space-y-2 sm:space-y-3 text-gray-300 text-sm sm:text-base">
+    {product.model && (
+      <p>
+        <span className="font-semibold text-white">Model:</span>{" "}
+        {product.model}
+      </p>
+    )}
+
+    {product.application && (
+      <p>
+        <span className="font-semibold text-white">Application:</span>{" "}
+        {product.application}
+      </p>
+    )}
+  </div>
+
+  {/* DESKTOP CTA BUTTON */}
+<a
+  href="#enquiry"
+  className="
+    hidden sm:inline-flex
+    items-center justify-center
+    mt-10
+    px-10 py-4
+    rounded-xl
+    bg-slate-100
+    text-slate-900
+    font-bold text-lg
+    transition-all duration-300
+
+    hover:bg-white
+    hover:ring-2 hover:ring-yellow-400/70
+
+    active:ring-2 active:ring-yellow-400/80
+    active:scale-[0.97]
+
+    focus-visible:ring-2 focus-visible:ring-yellow-400/80
+    focus:outline-none
+  "
+>
+  Enquire About This Product
+</a>
+
+</div>
+</div>
+{/* ================= ENQUIRY ================= */}
+<section id="enquiry" className="mt-6 sm:mt-12">
+  <div className="w-full sm:max-w-7xl mx-auto px-0 sm:px-6">
+
+    <h2 className="text-lg sm:text-3xl font-bold text-center mb-4 sm:mb-8">
+      Request More Information
+    </h2>
+
+    <form
+      onSubmit={handleSubmit}
+      className="
+        bg-slate-900
+        border border-white/10
+        rounded-lg sm:rounded-2xl
+        p-4 sm:p-8
+        space-y-3 sm:space-y-5
+      "
+    >
+      {["name", "email", "phone"].map((field) => (
+        <input
+          key={field}
+          type={field === "email" ? "email" : "text"}
+          name={field}
+          placeholder={`Your ${field}`}
+          value={formData[field]}
+          onChange={handleChange}
+          required
+          className="
+            w-full
+            px-3 sm:px-4
+            py-2 sm:py-3
+            text-sm sm:text-base
+            rounded-md sm:rounded-lg
+            bg-slate-950
+            border border-white/10
+            focus:ring-2 focus:ring-yellow-400/70
+            outline-none
+          "
+        />
+      ))}
+
+      <textarea
+        name="message"
+        rows="3"
+        placeholder="Your requirement / message"
+        value={formData.message}
+        onChange={handleChange}
+        className="
+          w-full
+          px-3 sm:px-4
+          py-2 sm:py-3
+          text-sm sm:text-base
+          rounded-md sm:rounded-lg
+          bg-slate-950
+          border border-white/10
+          focus:ring-2 focus:ring-yellow-400/70
+          outline-none
+        "
+      />
+
+      <button
+        type="submit"
+        disabled={submitting}
+        className="
+          w-full
+          mt-2
+          bg-slate-100
+          text-slate-900
+          py-2.5 sm:py-3
+          rounded-md sm:rounded-lg
+          font-semibold
+          text-sm sm:text-base
+          transition-all duration-200
+
+          active:ring-2 active:ring-yellow-400/80
+          focus-visible:ring-2 focus-visible:ring-yellow-400/80
+          active:scale-[0.97]
+
+          disabled:opacity-60
+          disabled:cursor-not-allowed
+          focus:outline-none
+        "
+      >
+        {submitting ? "Submitting..." : "Submit Enquiry"}
+      </button>
+    </form>
+
+  </div>
+</section>
+
+
+</div>
+    {/* ================= IMAGE LIGHTBOX (NO CARD) ================= */}
+{previewImage && (
+  <div
+    className="
+      fixed inset-0 z-50
+      bg-black/90
+      flex items-center justify-center
+      cursor-zoom-out
+      px-3 sm:px-0
+    "
+    onClick={() => setPreviewImage(null)}
+  >
+    <img
+      src={previewImage}
+      alt="Product preview"
+      className="
+        max-h-[80vh] sm:max-h-[90vh]
+        max-w-[90vw]
+        object-contain
+        select-none
+        sm:cursor-zoom-in
+      "
+      onClick={(e) => e.stopPropagation()}
+    />
+  </div>
+)}
+
+    </section>
   );
 };
 

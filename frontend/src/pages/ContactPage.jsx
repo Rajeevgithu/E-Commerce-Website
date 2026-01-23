@@ -4,14 +4,15 @@ import {
   FaLocationArrow,
   FaMobileAlt,
   FaEnvelope,
-  FaInstagram,
-  FaWhatsapp,
-  FaTwitter,
-  FaFacebook,
-  FaLinkedin,
+  FaFileInvoice ,
 } from "react-icons/fa";
 
 function ContactPage() {
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  // ✅ FIX: submitting state added
+  const [submitting, setSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,178 +20,179 @@ function ContactPage() {
     message: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    alert("Thank you for contacting us. We will get back to you shortly.");
+    setSubmitting(true);
+
+    setTimeout(() => {
+      alert("Thank you for contacting us. We will get back to you shortly.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+      setSubmitting(false);
+    }, 1200);
   };
 
   return (
-    <div className="w-full bg-white">
+    <div className="relative overflow-hidden w-full min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_60%)] pointer-events-none" />
+      <div className="relative z-10">
 
-      {/* ================= PAGE HEADER ================= */}
-      <section className="max-w-7xl mx-auto px-6 py-20 text-center">
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl xl:text-5xl font-bold text-gray-900 mb-4"
-        >
-          Contact Us
-        </motion.h1>
-
-        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Reach out to us for machinery enquiries, technical support, or general
-          information. Our team is ready to assist you.
-        </p>
-      </section>
-
-      <SectionDivider />
-
-      {/* ================= MAIN CONTENT ================= */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14">
-
-          {/* ================= CONTACT FORM ================= */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
+        {/* ================= PAGE HEADER ================= */}
+        <section className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-10 text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm"
+            className="text-3xl md:text-4xl xl:text-5xl font-bold text-slate-100 mb-4"
           >
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-              Send Us a Message
-            </h2>
+            Contact Us
+          </motion.h1>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {["name", "email", "subject"].map((field) => (
-                <div key={field}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
-                  </label>
+          <p className="text-slate-300 text-base md:text-lg max-w-2xl mx-auto mb-4 md:mb-6 leading-snug md:leading-relaxed">
+
+            Reach out to us for machinery enquiries, technical support, or general
+            information. Our team is ready to assist you.
+          </p>
+        </section>
+
+        {/* ================= MAIN CONTENT ================= */}
+        <section className="max-w-7xl mx-auto px-4 md:px-6 pt-2 pb-14 md:py-20">
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14">
+
+            {/* ================= CONTACT FORM ================= */}
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white border border-gray-200 rounded-xl md:rounded-2xl p-4 md:p-8 shadow-lg"
+            >
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4 md:mb-6">
+                Send Us a Message
+              </h2>
+
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
+                {["name", "email", "subject"].map((field) => (
                   <input
+                    key={field}
                     type={field === "email" ? "email" : "text"}
                     name={field}
+                    placeholder={`Your ${field}`}
                     value={formData[field]}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg 
-                    focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-slate-500 outline-none"
                   />
-                </div>
-              ))}
+                ))}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Message
-                </label>
                 <textarea
                   name="message"
                   rows="4"
+                  placeholder="Your message"
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg 
-                  focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-slate-500 outline-none"
                 />
-              </div>
 
-              <button
-                type="submit"
-                className="w-full md:w-auto px-8 py-3 rounded-lg 
-                bg-gray-900 text-white font-semibold 
-                hover:bg-gray-800 transition"
-              >
-                Submit Enquiry
-              </button>
-            </form>
-          </motion.div>
+                {/* ================= SUBMIT BUTTON ================= */}
+                <button
+  type="submit"
+  disabled={submitting}
+  className="
+    w-full
+    mt-3
+    bg-slate-900
+    text-white
+    py-2 md:py-3
+    rounded-md md:rounded-lg
+    font-semibold
+    text-sm md:text-base
 
-          {/* ================= CONTACT DETAILS ================= */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="bg-gray-50 border border-gray-200 rounded-2xl p-8"
-          >
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-              Contact Information
-            </h2>
+    shadow-md
+    hover:bg-slate-800
+    transition-all duration-200
 
-            <div className="space-y-6 text-gray-700">
-              <div className="flex items-start gap-4">
-                <FaLocationArrow className="text-yellow-500 text-xl mt-1" />
-                <p>
-                  Datta Wadi, Boisar, <br />
-                  Maharashtra 401501, India
-                </p>
-              </div>
+    active:ring-2 active:ring-yellow-400/80
+    focus-visible:ring-2 focus-visible:ring-yellow-400/80
+    active:scale-[0.97]
 
-              <div className="flex items-center gap-4">
-                <FaMobileAlt className="text-yellow-500 text-xl" />
-                <p>+91 76669 40824</p>
-              </div>
+    disabled:opacity-60
+    disabled:cursor-not-allowed
+    focus:outline-none
+  "
+>
+  {submitting ? "Submitting..." : "Submit Enquiry"}
+</button>
 
-              <div className="flex items-center gap-4">
-                <FaEnvelope className="text-yellow-500 text-xl" />
-                <p>sales@texttechenterprises.com</p>
-              </div>
+              </form>
+            </motion.div>
 
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  Business Hours
-                </h3>
-                <p>Mon – Fri: 9:00 AM – 5:00 PM</p>
-                <p>Saturday: 10:00 AM – 4:00 PM</p>
-                <p>Sunday: Closed</p>
-              </div>
+            {/* ================= CONTACT DETAILS ================= */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-gray-50 border border-gray-200 rounded-xl md:rounded-2xl p-4 md:p-8"
+            >
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4 md:mb-6">
+                Contact Information
+              </h2>
 
-              {/* Social Links */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  Connect With Us
-                </h3>
-                <div className="flex gap-4">
-                  <FaInstagram className="text-2xl hover:text-yellow-500 cursor-pointer" />
-                  <FaWhatsapp className="text-2xl hover:text-yellow-500 cursor-pointer" />
-                  <FaTwitter className="text-2xl hover:text-yellow-500 cursor-pointer" />
-                  <FaFacebook className="text-2xl hover:text-yellow-500 cursor-pointer" />
-                  <FaLinkedin className="text-2xl hover:text-yellow-500 cursor-pointer" />
+              <div className="space-y-4 text-gray-900 text-sm md:text-base">
+                <div className="flex items-start gap-3">
+                  <FaLocationArrow className="text-slate-900 text-lg mt-1" />
+                  <p>
+                    3603 Durganagar, Bhaiyapada
+                    <br />
+                     Boisar, Dist-Palghar
+                    <br />
+                    Maharashtra 401501, India
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <FaMobileAlt className="text-slate-900 text-lg" />
+                  <p>+91 8856963655</p>
+                </div>
+
+                <div className="flex items-center gap-3">
+  <FaFileInvoice className="text-slate-900 text-lg" />
+  <p className="font-medium">
+    GSTIN: 27ASDPG9360Q1Z3
+  </p>
+</div>
+
+
+                <div className="flex items-center gap-3">
+                  <FaEnvelope className="text-slate-900 text-lg" />
+                  <p>sales@texttechenterprises.com</p>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+            </motion.div>
 
-      <SectionDivider />
+          </div>
+        </section>
 
-      {/* ================= MAP ================= */}
-      <section className="max-w-7xl mx-auto px-6 pb-20">
-        <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1876.9230917386158!2d72.74786187165601!3d19.80411799841798"
-            width="100%"
-            height="400"
-            loading="lazy"
-            className="border-0 w-full"
-          ></iframe>
-        </div>
-      </section>
-    </div>
-  );
-}
+        {/* ================= MAP ================= */}
+        <section className="max-w-7xl mx-auto px-4 md:px-6 pb-14 md:pb-20">
+          <div className="relative rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
+            {!mapLoaded && (
+              <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+            )}
 
-/* ================= DIVIDER ================= */
-function SectionDivider() {
-  return (
-    <div className="flex justify-center">
-      <div className="w-24 h-1 bg-yellow-500 rounded-full my-6" />
+            <iframe
+              src="https://www.google.com/maps?q=Datta%20Wadi%20Boisar%20Maharashtra&output=embed"
+              loading="lazy"
+              className="w-full h-[300px] md:h-[400px] border-0"
+              onLoad={() => setMapLoaded(true)}
+            />
+          </div>
+        </section>
+
+      </div>
     </div>
   );
 }

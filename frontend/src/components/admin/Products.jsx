@@ -10,21 +10,23 @@ export default function Products() {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    price: "",
-    image: "",
+    images: [],
     category: "",
     brand: "",
   });
 
+  /* ================= FETCH ================= */
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await api.get("/products");
-        setProducts(response.data);
+        const res = await api.get("/products");
+        setProducts(res.data || []);
       } catch {
         setError("Failed to fetch products");
       } finally {
@@ -35,15 +37,14 @@ export default function Products() {
     fetchProducts();
   }, []);
 
-  /* -------------------- Actions -------------------- */
+  /* ================= ACTIONS ================= */
 
   const handleAdd = () => {
     setEditingProduct(null);
     setFormData({
       name: "",
       description: "",
-      price: "",
-      image: "",
+      images: [],
       category: "",
       brand: "",
     });
@@ -53,12 +54,9 @@ export default function Products() {
   const handleEdit = (product) => {
     setEditingProduct(product);
     setFormData({
-      name: product.name,
-      description: product.description,
-      price: product.price.toString(),
-      image: Array.isArray(product.image)
-        ? product.image[0]
-        : product.image,
+      name: product.name || "",
+      description: product.description || "",
+      images: [], // only NEW images
       category: product.category || "",
       brand: product.brand || "",
     });
@@ -66,183 +64,165 @@ export default function Products() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!window.confirm("Delete this product?")) return;
 
     try {
-      await api.delete(`/api/products/${id}`);
-      setProducts(products.filter((p) => p._id !== id));
+      await api.delete(`/products/${id}`);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch {
       alert("Failed to delete product");
     }
   };
 
+  /* ================= IMAGE ADD ================= */
+
+  const handleImageAdd = (e) => {
+    const files = Array.from(e.target.files);
+
+    setFormData((prev) => ({
+      ...prev,
+      images: [...prev.images, ...files],
+    }));
+
+    e.target.value = "";
+  };
+
+  /* ================= SUBMIT ================= */
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
-    const payload = {
-      name: formData.name,
-      description: formData.description,
-      price: parseFloat(formData.price),
-      image: [formData.image],
-      category: formData.category,
-      brand: formData.brand,
-    };
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("description", formData.description);
+
+    if (formData.category) data.append("category", formData.category);
+    if (formData.brand) data.append("brand", formData.brand);
+
+    formData.images.forEach((img) => {
+      data.append("images", img);
+    });
 
     try {
+      let res;
+
       if (editingProduct) {
-        const response = await api.put(
+        res = await api.put(
           `/products/${editingProduct._id}`,
-          payload
+          data,
+          { headers: { "Content-Type": "multipart/form-data" } }
         );
-        setProducts(
-          products.map((p) =>
-            p._id === editingProduct._id ? response.data : p
+
+        setProducts((prev) =>
+          prev.map((p) =>
+            p._id === editingProduct._id ? res.data : p
           )
         );
       } else {
-        const response = await api.post("/products", payload);
-        setProducts([...products, response.data]);
+        res = await api.post("/products", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        setProducts((prev) => [...prev, res.data]);
       }
 
       setShowModal(false);
       setEditingProduct(null);
     } catch {
       alert("Failed to save product");
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  /* ================= FILTER ================= */
+
   const filteredProducts = products.filter(
     (p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase())
+      p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  /* -------------------- UI -------------------- */
+  if (loading) return <p className="text-gray-500">Loading products...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
+
+  /* ================= UI ================= */
 
   return (
     <div className="space-y-8">
-
-      {/* ================= HEADER ================= */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Products
-          </h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <h1 className="text-2xl font-semibold">Products</h1>
+          <p className="text-sm text-gray-500">
             Manage all machinery and industrial products
           </p>
         </div>
 
         <button
           onClick={handleAdd}
-          className="inline-flex items-center gap-2 px-5 py-2.5 
-          bg-indigo-600 text-white rounded-lg font-semibold 
-          hover:bg-indigo-500 transition"
+          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500"
         >
-          <Plus size={18} />
-          Add Product
+          <Plus size={18} /> Add Product
         </button>
       </div>
 
-      {/* ================= SEARCH ================= */}
-      <div className="max-w-md">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search products…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 
-            rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-          />
-        </div>
+      {/* SEARCH */}
+      <div className="max-w-md relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search products..."
+          className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+        />
       </div>
 
-      {/* ================= TABLE ================= */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+      {/* TABLE */}
+      <div className="bg-white rounded-xl border overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b">
-            <tr className="text-left text-gray-600">
-              <th className="px-6 py-4 font-medium">Product</th>
-              <th className="px-6 py-4 font-medium">Description</th>
-              <th className="px-6 py-4 font-medium">Price</th>
-              <th className="px-6 py-4 font-medium">Created</th>
-              <th className="px-6 py-4 font-medium text-right">Actions</th>
+            <tr>
+              <th className="px-6 py-4 text-left">Product</th>
+              <th className="px-6 py-4 text-left">Description</th>
+              <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
 
-          <tbody className="divide-y">
-            {loading && (
-              <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                  Loading products…
-                </td>
-              </tr>
-            )}
-
-            {!loading && filteredProducts.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                  No products found
-                </td>
-              </tr>
-            )}
-
+          <tbody>
             {filteredProducts.map((product) => (
-              <tr key={product._id} className="hover:bg-gray-50 transition">
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={
-                        Array.isArray(product.image)
-                          ? product.image[0]
-                          : product.image
-                      }
-                      alt={product.name}
-                      className="h-12 w-12 rounded-lg object-cover"
-                    />
-                    <div>
-                      <p className="font-medium text-gray-900">
-                        {product.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {product.category || "Uncategorized"}
-                      </p>
-                    </div>
-                  </div>
+              <tr key={product._id} className="border-b hover:bg-gray-50">
+                <td className="px-6 py-4 flex items-center gap-3">
+                  <img
+                    src={
+                      Array.isArray(product.images)
+                        ? product.images[0]
+                        : product.images
+                    }
+                    alt={product.name}
+                    className="h-12 w-12 rounded-lg object-cover"
+                  />
+                  <span className="font-medium">{product.name}</span>
                 </td>
 
-                <td className="px-6 py-4 text-gray-600 max-w-sm truncate">
+                <td className="px-6 py-4 text-gray-600 truncate max-w-sm">
                   {product.description}
                 </td>
 
-                <td className="px-6 py-4 text-gray-900">
-                  {new Intl.NumberFormat("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                  }).format(product.price)}
-                </td>
-
-                <td className="px-6 py-4 text-gray-600">
-                  {new Date(product.createdAt).toLocaleDateString()}
-                </td>
-
                 <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={() => handleEdit(product)}
-                      className="p-2 rounded-lg text-indigo-600 hover:bg-indigo-50"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(product._id)}
-                      className="p-2 rounded-lg text-red-600 hover:bg-red-50"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleEdit(product)}
+                    className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -250,78 +230,88 @@ export default function Products() {
         </table>
       </div>
 
-      {/* ================= MODAL ================= */}
+      {/* MODAL */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4">
-          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {editingProduct ? "Edit Product" : "Add Product"}
-              </h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="p-2 rounded-lg hover:bg-gray-100"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
+          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-xl">
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              {[
-                ["Product Name", "name"],
-                ["Description", "description"],
-                ["Price", "price"],
-                ["Image URL", "image"],
-              ].map(([label, field]) => (
-                <div key={field}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {label}
-                  </label>
-                  {field === "description" ? (
-                    <textarea
-                      rows={3}
-                      value={formData[field]}
-                      onChange={(e) =>
-                        setFormData({ ...formData, [field]: e.target.value })
-                      }
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                      required
-                    />
-                  ) : (
-                    <input
-                      type={field === "price" ? "number" : "text"}
-                      value={formData[field]}
-                      onChange={(e) =>
-                        setFormData({ ...formData, [field]: e.target.value })
-                      }
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                      required={field !== "image"}
-                    />
-                  )}
-                </div>
-              ))}
+              <input
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="Product Name"
+                className="w-full border p-2 rounded"
+                required
+              />
 
-              {formData.image && (
-                <img
-                  src={formData.image}
-                  alt="Preview"
-                  className="h-28 w-28 rounded-lg object-cover border"
-                />
+              <textarea
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Description"
+                className="w-full border p-2 rounded"
+                required
+              />
+
+              <select
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+                className="w-full border p-2 rounded"
+              >
+                <option value="">Select Category</option>
+                <option value="Consumable Items">Consumable Items</option>
+                <option value="Testing Products">Testing Products</option>
+                <option value="Paint & Coating">Paint & Coating</option>
+              </select>
+
+              <input type="file" accept="image/*" onChange={handleImageAdd} />
+
+              {formData.images.length > 0 && (
+                <div className="grid grid-cols-5 gap-4">
+                  {formData.images.map((file, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt="preview"
+                        className="h-28 w-full object-contain border rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            images: formData.images.filter(
+                              (_, i) => i !== index
+                            ),
+                          })
+                        }
+                        className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
 
-              <div className="flex justify-end gap-3 pt-6 border-t">
+              <div className="flex justify-end gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg hover:bg-gray-100"
+                  className="px-4 py-2 border rounded"
                 >
                   Cancel
                 </button>
                 <button
+                  disabled={submitting}
                   type="submit"
-                  className="px-5 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500"
+                  className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-500 disabled:opacity-60"
                 >
-                  {editingProduct ? "Update Product" : "Create Product"}
+                  {submitting ? "Saving..." : "Save Product"}
                 </button>
               </div>
             </form>

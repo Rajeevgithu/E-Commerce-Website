@@ -196,16 +196,57 @@ function App() {
             </Route>
 
           </Routes>
+{/* ================= FLOATING CONTACT ACTIONS ================= */}
+<div className="fixed right-4 bottom-20 flex flex-col gap-4 z-50">
 
-          {/* Floating icons can stay global */}
-          <div className="fixed right-4 bottom-20 flex flex-col gap-4 z-50">
-            <a href={getWhatsAppUrl()} target="_blank" rel="noreferrer">
-              <FaWhatsapp className="text-green-500 text-4xl" />
-            </a>
-            <a href={getPhoneUrl()} target="_blank" rel="noreferrer">
-              <FaPhoneAlt className="text-green-500 text-4xl" />
-            </a>
-          </div>
+  {/* WhatsApp */}
+  <a
+    href="https://wa.me/918856963655"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Chat on WhatsApp"
+    className="
+      w-12 h-12
+      flex items-center justify-center
+      rounded-full
+      bg-green-500
+      text-white
+      shadow-lg shadow-green-500/30
+      transition-all duration-300
+
+      hover:bg-green-600
+      hover:scale-110
+
+      active:scale-95
+    "
+  >
+    <FaWhatsapp className="text-xl" />
+  </a>
+
+  {/* Phone Call */}
+  <a
+    href="tel:+918856963655"
+    aria-label="Call us"
+      className="
+      w-12 h-12
+      flex items-center justify-center
+      rounded-full
+      bg-green-500
+      text-white
+      shadow-lg shadow-green-500/30
+      transition-all duration-300
+
+      hover:bg-green-600
+      hover:scale-110
+
+      active:scale-95
+    "
+  >
+    <FaPhoneAlt className="text-lg" />
+  </a>
+
+</div>
+
 
         </CartProvider>
       </Router>

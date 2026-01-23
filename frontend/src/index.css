@@ -119,19 +119,20 @@ a:hover {
   color: var(--color-primary);
 }
 
-.nav-links {
-  display: flex;
-  gap: 1.5rem;
+/* === Border-perfect clockwise runner === */
+.search-border-path {
+  animation: border-path-run 1.8s linear infinite;
 }
 
-.nav-link {
-  font-weight: 500;
-  transition: var(--transition);
+@keyframes border-path-run {
+  from {
+    stroke-dashoffset: 300;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
-.nav-link:hover {
-  color: var(--color-accent);
-}
 
 /* Hero section styles */
 .hero {
