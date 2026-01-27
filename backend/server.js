@@ -30,6 +30,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // 🔐 ADMIN AUTH
 app.use("/api/admin", require("./routes/adminAuthRoutes"));
 
+// 📩 CONTACT / ENQUIRY
+app.use("/api/contact", require("./routes/contact"));
+
+
 // 📊 ADMIN DASHBOARD
 app.use("/api/admin/dashboard", require("./routes/adminDashboardRoutes"));
 app.use("/api/admin/users", require("./routes/adminUserRoutes"));

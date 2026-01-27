@@ -5,25 +5,12 @@ import { useParams, useLocation, Link } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-/* ================= PRODUCT MENU (REUSED FROM NAVBAR) ================= */
-const ProductsMenu = [
-  { id: 0, name: "All", link: "/all-products" },
-  { id: 1, name: "Consumable Items", link: "/all-products/consumable-items" },
-  { id: 2, name: "Testing Products", link: "/all-products/testing-products" },
-  { id: 3, name: "Paint & Coating", link: "/all-products/paint-and-coating" },
-];
-
-/* ================= SKELETON ================= */
-const ProductSkeletonCard = () => (
-  <div className="min-h-[360px] md:min-h-[420px] flex flex-col rounded-2xl overflow-hidden bg-gradient-to-b from-white/10 via-white/5 to-slate-900/60 border border-white/10 animate-pulse">
-    <div className="h-64 md:h-72 px-4 pt-6 pb-4">
-      <div className="w-full h-full bg-white/20 rounded-lg" />
-    </div>
-    <div className="mt-auto h-16 md:h-20 px-4 bg-slate-900 flex items-center justify-center">
-      <div className="h-4 w-3/4 bg-white/20 rounded" />
-    </div>
-  </div>
-);
+/* ================= CATEGORY MAP ================= */
+const CATEGORY_SLUG_MAP = {
+  "consumable-items": "Consumable Items",
+  "testing-products": "Testing Products",
+  "paint-and-coating": "Paint & Coating",
+};
 
 function ProductPage() {
   const { category } = useParams();
@@ -37,27 +24,20 @@ function ProductPage() {
 
   const { products, loading, error } = useProducts();
 
-  /* ================= CATEGORY FROM ROUTE ================= */
+  /* ================= HANDLE ROUTE CATEGORY ================= */
+  useEffect(() => {
+    setSearchTerm(initialSearch);
+  }, [initialSearch]);
 
   useEffect(() => {
-  setSearchTerm(initialSearch);
-}, [initialSearch]);
-
-  useEffect(() => {
-    const categorySlugMap = {
-      "consumable-items": "Consumable Items",
-      "testing-products": "Testing Products",
-      "paint-and-coating": "Paint & Coating",
-    };
-
-    if (category) {
-      setSelectedCategory(categorySlugMap[category] || "all");
+    if (category && CATEGORY_SLUG_MAP[category]) {
+      setSelectedCategory(CATEGORY_SLUG_MAP[category]);
     } else {
       setSelectedCategory("all");
     }
   }, [category]);
 
-  /* ================= FILTER ================= */
+  /* ================= FILTERED PRODUCTS ================= */
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
@@ -70,11 +50,18 @@ function ProductPage() {
     return matchesSearch && matchesCategory;
   });
 
+  /* ================= GROUP BY CATEGORY (HOME PAGE) ================= */
   const productsByCategory = {
-  "Consumable Items": products.filter(p => p.category === "Consumable Items"),
-  "Testing Products": products.filter(p => p.category === "Testing Products"),
-  "Paint & Coating": products.filter(p => p.category === "Paint & Coating"),
-};
+    "Consumable Items": products.filter(
+      (p) => p.category === "Consumable Items"
+    ),
+    "Testing Products": products.filter(
+      (p) => p.category === "Testing Products"
+    ),
+    "Paint & Coating": products.filter(
+      (p) => p.category === "Paint & Coating"
+    ),
+  };
 
   if (error) {
     return (
@@ -89,7 +76,7 @@ function ProductPage() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 text-white">
 
         {/* ================= HEADER ================= */}
-        <div className="text-center mb-10 md:mb-14">
+        <div className="text-center mb-12">
           <h1 className="text-3xl md:text-5xl font-extrabold mb-3">
             Our Machinery & Equipment
           </h1>
@@ -99,39 +86,10 @@ function ProductPage() {
           </p>
         </div>
 
-        {/* ================= MOBILE CATEGORY FILTER ================= */}
-        {/* <div className="md:hidden mb-6">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-            {ProductsMenu.map((item) => {
-              const isActive =
-                (item.link === "/all-products" &&
-                  selectedCategory === "all") ||
-                location.pathname === item.link;
-
-              return (
-                <Link
-                  key={item.id}
-                  to={item.link}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition
-                    ${
-                      isActive
-                        ? "bg-yellow-500 text-black border-yellow-500"
-                        : "bg-slate-900 text-gray-300 border-white/15"
-                    }
-                  `}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
-          </div>
-        </div> */}
-
-        {/* ================= SEARCH BAR ================= */}
-        <div className="max-w-xl mx-auto mb-16">
-          <div className="relative group">
+        {/* ================= SEARCH ================= */}
+        <div className="max-w-xl mx-auto mb-14">
+          <div className="relative">
             <IoMdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
-
             <input
               type="text"
               placeholder="Search machinery..."
@@ -140,91 +98,206 @@ function ProductPage() {
               className="
                 w-full h-12 pl-11 pr-4 rounded-xl
                 bg-slate-900 text-gray-200
-                border border-white/15
-                outline-none
-                transition-all duration-300
-                focus:border-yellow-400
-                focus:ring-0
-                focus:shadow-[inset_-4px_0_0_0_rgba(250,204,21,0.9)]
+                border border-white/15 outline-none
+                focus:border-yellow-400 transition
               "
             />
           </div>
         </div>
 
-{/* ================= MOBILE CATEGORY SECTIONS ================= */}
-<div className="space-y-14">
+        {/* ========================================================= */}
+        {/* ================= CATEGORY PAGE VIEW ==================== */}
+        {/* ========================================================= */}
+        {selectedCategory !== "all" && (
+  <>
+    {/* ================= CATEGORY HEADER ================= */}
+    <div className="mb-10">
 
-  {Object.entries(productsByCategory).map(([categoryName, items]) => {
-    if (items.length === 0) return null;
-
-    return (
-      <div key={categoryName}>
-        
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg md:text-xl font-semibold text-white">
-            {categoryName}
-          </h2>
-
-          <Link
-            to={`/all-products/${categoryName.toLowerCase().replace(/\s+/g, "-")}`}
-            className="text-sm text-white font-medium"
-          >
-            View All →
-          </Link>
-        </div>
-
-        {/* Products */}
-        <div
+      {/* ================= MOBILE QUICK NAV (ONLY MOBILE) ================= */}
+      <div className="flex md:hidden gap-3 mb-4">
+        <Link
+          to="/"
           className="
-            flex gap-4 overflow-x-auto no-scrollbar pb-2
-            md:grid md:grid-cols-5 md:gap-6 md:overflow-visible
+            flex-1 text-center text-sm font-medium
+            py-2 rounded-lg
+            bg-slate-800 text-white
+            border border-white/10
+            hover:bg-slate-700 transition
           "
         >
-          {items.slice(0, 10).map((product) => {
-            const img = Array.isArray(product.image)
-              ? product.image[0]
-              : product.image;
+          Home
+        </Link>
 
-            const imgSrc = img?.startsWith("http")
-              ? img
-              : `${BASE_URL}/${img?.replace(/^\/+/, "")}`;
-
-            return (
-              <Link
-                key={product._id}
-                to={`/product/${product._id}`}
-                className="
-                  min-w-[180px] md:min-w-0
-                  bg-gradient-to-b from-white/90 via-white/60 to-slate-900
-                  rounded-xl
-                  border border-white/15
-                  overflow-hidden
-                "
-              >
-                <div className="h-36 md:h-48 bg-white flex items-center justify-center p-3">
-                  <img
-                    src={imgSrc}
-                    alt={product.name}
-                    className="max-h-full object-contain"
-                  />
-                </div>
-
-                <div className="p-3 bg-slate-900">
-                  <p className="text-xs md:text-sm text-gray-200 line-clamp-2">
-                    {product.name}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <Link
+          to="/all-products"
+          className="
+            flex-1 text-center text-sm font-medium
+            py-2 rounded-lg
+            bg-slate-800 text-white
+            border border-white/10
+            hover:bg-slate-700 transition
+          "
+        >
+          Products
+        </Link>
       </div>
-    );
-  })}
 
+      {/* ================= DESKTOP BREADCRUMB ================= */}
+      <p className="hidden md:block text-sm text-gray-400 mb-2">
+        Home / Products / {selectedCategory}
+      </p>
+
+      <h2 className="text-2xl md:text-3xl font-bold text-white">
+        {selectedCategory}
+      </h2>
+
+      <p className="text-gray-300 mt-2 max-w-3xl">
+        Explore our complete range of{" "}
+        {selectedCategory.toLowerCase()} engineered for industrial
+        performance and reliability.
+      </p>
+    </div>
+
+    {/* ================= PRODUCT GRID ================= */}
+<div className="w-full">
+  <div className="
+    max-w-[1600px]
+    mx-auto
+    px-2 sm:px-4 md:px-8
+    grid
+    grid-cols-2
+    sm:grid-cols-2
+    md:grid-cols-3
+    lg:grid-cols-4
+    xl:grid-cols-5
+    2xl:grid-cols-6
+    gap-4 sm:gap-6 lg:gap-10
+  ">
+
+
+      {filteredProducts.map((product) => {
+        const img = Array.isArray(product.image)
+          ? product.image[0]
+          : product.image;
+
+        const imgSrc = img?.startsWith("http")
+          ? img
+          : `${BASE_URL}/${img?.replace(/^\/+/, "")}`;
+
+        return (
+         <Link
+  key={product._id}
+  to={`/product/${product._id}`}
+  className="
+    w-full
+    flex flex-col
+    group
+    bg-gradient-to-b from-white/95 via-white/80 to-slate-900
+    rounded-xl border border-white/15 overflow-hidden
+    hover:shadow-xl hover:-translate-y-1 transition
+  "
+>
+
+            <div className="h-40 bg-white flex items-center justify-center p-4">
+              <img
+                src={imgSrc}
+                alt={product.name}
+                className="max-h-full object-contain group-hover:scale-105 transition"
+              />
+            </div>
+
+            <div className="bg-slate-900 px-4 py-3 flex-1 flex items-end">
+  <p className="text-sm text-gray-200 line-clamp-2">
+    {product.name}
+  </p>
 </div>
 
+          </Link>
+        );
+      })}
+    </div>
+    </div>
+  </>
+)}
+
+
+        {/* ========================================================= */}
+        {/* ================= ALL PRODUCTS VIEW ===================== */}
+        {/* ========================================================= */}
+        {selectedCategory === "all" && (
+          <div className="space-y-16">
+            {Object.entries(productsByCategory).map(
+              ([categoryName, items]) => {
+                if (!items.length) return null;
+
+                return (
+                  <div key={categoryName}>
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg md:text-xl font-semibold">
+                        {categoryName}
+                      </h2>
+
+                      <Link
+                        to={`/all-products/${categoryName
+                          .toLowerCase()
+                          .replace(/\s+/g, "-")}`}
+                        className="text-sm font-medium text-white hover:text-yellow-400 transition"
+                      >
+                        View All →
+                      </Link>
+                    </div>
+
+                    {/* Horizontal Row */}
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                      {items.slice(0, 10).map((product) => {
+                        const img = Array.isArray(product.image)
+                          ? product.image[0]
+                          : product.image;
+
+                        const imgSrc = img?.startsWith("http")
+                          ? img
+                          : `${BASE_URL}/${img?.replace(/^\/+/, "")}`;
+
+                        return (
+                          <Link
+                            key={product._id}
+                            to={`/product/${product._id}`}
+                          className="
+                            min-w-[180px]
+                            sm:min-w-[200px]
+                            md:min-w-[240px]
+                            lg:min-w-[280px]
+                            xl:min-w-[320px]
+                            bg-gradient-to-b from-white/95 via-white/80 to-slate-900
+                            rounded-xl border border-white/15 overflow-hidden
+                          "
+
+                          >
+                           <div className="h-36 sm:h-40 md:h-44 lg:h-52 bg-white flex items-center justify-center p-4">
+
+                              <img
+                                src={imgSrc}
+                                alt={product.name}
+                                className="max-h-full object-contain"
+                              />
+                            </div>
+
+                           <div className="bg-slate-900 px-4 py-3 flex-1 flex items-end">
+    <p className="text-sm text-gray-200 line-clamp-2">
+      {product.name}
+    </p>
+  </div>
+</Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

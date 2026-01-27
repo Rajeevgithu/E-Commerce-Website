@@ -81,7 +81,7 @@ const handleChange = (e) => {
   setFormStatus({ type: "", message: "" });
 
   try {
-    await api.post("/enquiries", {
+    await api.post("/contact", {
       ...formData,
       productId: product._id,
       productName: product.name,
