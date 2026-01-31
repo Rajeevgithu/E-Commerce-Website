@@ -14,11 +14,19 @@ connectDB();
 
 // ================== SECURITY ==================
 app.set("trust proxy", 1);
-app.use(helmet());
 
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+
+// ================== RATE LIMIT ==================
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,                // limit each IP
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 app.use("/api", limiter);
 
@@ -27,6 +35,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://texttechenterprises.com",
   "https://www.texttechenterprises.com",
+  "https://api.texttechenterprises.com",
 ];
 
 app.use(
@@ -42,7 +51,6 @@ app.use(
   })
 );
 
-
 // ================== MIDDLEWARE ==================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -55,7 +63,6 @@ app.use("/api/admin", require("./routes/adminAuthRoutes"));
 // 📩 CONTACT / ENQUIRY
 app.use("/api/contact", require("./routes/contact"));
 
-
 // 📊 ADMIN DASHBOARD
 app.use("/api/admin/dashboard", require("./routes/adminDashboardRoutes"));
 app.use("/api/admin/users", require("./routes/adminUserRoutes"));
@@ -66,14 +73,14 @@ app.use("/api/products", require("./routes/productRoutes"));
 // 📰 BLOGS
 app.use("/api/blogs", require("./routes/blogRoutes"));
 
-// 📷 IMAGE UPLOAD
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-
+// 🛒 CART
 app.use("/api/cart", require("./routes/cartRoutes"));
 
 // 👤 USER AUTH
 app.use("/api/auth", require("./routes/authRoutes"));
+
+// 📷 IMAGE UPLOADS
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ================== HEALTH CHECK ==================
 app.get("/api/health", (req, res) => {

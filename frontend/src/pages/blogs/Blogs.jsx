@@ -31,7 +31,7 @@ const Blogs = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/blogs");
+        const response = await fetch("http://54.90.195.30/api/blogs");
         if (!response.ok) throw new Error("Failed to fetch blogs");
 
         const data = await response.json();
