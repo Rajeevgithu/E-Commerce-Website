@@ -7,6 +7,10 @@
     "dev": "nodemon server.js",
     "seed": "node seed/seedProducts.js"
   },
+  "engines": {
+    "node": "18.x"
+  
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
