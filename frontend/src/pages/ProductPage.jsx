@@ -142,10 +142,11 @@ function ProductPage() {
         </Link>
       </div>
 
-      {/* ================= DESKTOP BREADCRUMB ================= */}
-      <p className="hidden md:block text-sm text-gray-400 mb-2">
-        Home / Products / {selectedCategory}
-      </p>
+      {/* ================= MOBILE BREADCRUMB (ONLY MOBILE) ================= */}
+<p className="block md:hidden text-sm text-gray-400 mb-2">
+  Home / Products / {selectedCategory}
+</p>
+
 
       <h2 className="text-2xl md:text-3xl font-bold text-white">
         {selectedCategory}

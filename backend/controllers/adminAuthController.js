@@ -26,7 +26,7 @@ exports.loginAdmin = async (req, res) => {
         role: "admin",
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "30d" }
     );
 
     // 4. Send unified response
