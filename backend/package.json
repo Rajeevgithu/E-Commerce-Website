@@ -17,20 +17,22 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "aws-sdk": "^2.1693.0",
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.6",
-    "dotenv": "^16.6.1",
-    "express": "^5.2.1",
-    "express-rate-limit": "^8.2.1",
-    "fast-xml-parser": "^5.3.3",
-    "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^7.6.3",
-    "multer": "^2.0.2",
-    "multer-s3": "^2.10.0",
-    "nodemailer": "^7.0.12"
-  },
+  "aws-sdk": "^2.1693.0",
+  "bcryptjs": "^3.0.3",
+  "cors": "^2.8.6",
+  "dotenv": "^16.6.1",
+  "express": "4.19.2",
+  "express-rate-limit": "^8.2.1",
+  "fast-xml-parser": "^5.3.3",
+  "helmet": "^8.1.0",
+  "jsonwebtoken": "^9.0.3",
+  "mongoose": "7.6.3",
+  "mongodb": "5.9.2",
+  "multer": "^2.0.2",
+  "multer-s3": "^2.10.0",
+  "nodemailer": "^7.0.12"
+}
+,
   "devDependencies": {
     "nodemon": "^3.1.10"
   }
