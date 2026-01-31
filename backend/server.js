@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");          // ✅ ADD THIS
+const path = require("path");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
@@ -10,20 +12,40 @@ const app = express();
 // ================== DATABASE ==================
 connectDB();
 
+// ================== SECURITY ==================
+app.set("trust proxy", 1);
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+});
+app.use("/api", limiter);
+
 // ================== CORS ==================
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://texttechenterprises.com",
+  "https://www.texttechenterprises.com",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
 
+
 // ================== MIDDLEWARE ==================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// ✅ ADD THIS BLOCK (STATIC FILES)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ================== ROUTES ==================
 
