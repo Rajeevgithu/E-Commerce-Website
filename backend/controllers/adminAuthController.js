@@ -1,3 +1,7 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const Admin = require("../models/Admin");
+
 exports.loginAdmin = async (req, res) => {
   try {
     console.log("LOGIN BODY:", req.body);   // 🔴 ADD THIS
@@ -19,10 +23,11 @@ exports.loginAdmin = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: admin._id, email: admin.email, role: "admin" },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" }
-    );
+  { id: admin._id, email: admin.email, role: "admin" },
+  process.env.JWT_SECRET,
+  { expiresIn: process.env.JWT_EXPIRES_IN || "30d" }
+);
+
 
     res.json({ token, user: { id: admin._id, email: admin.email, role: "admin" } });
   } catch (error) {
