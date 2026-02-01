@@ -30,27 +30,28 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const [summaryRes, usersRes, cartsRes] = await Promise.all([
-          api.get("/admin/dashboard/summary"),
-          api.get("/admin/dashboard/users"),
-          api.get("/admin/dashboard/carts"),
-        ]);
+ useEffect(() => {
+  const fetchDashboard = async () => {
+    try {
+      const [summaryRes, usersRes, cartsRes] = await Promise.all([
+        api.get("/admin/dashboard/summary"),
+        api.get("/admin/dashboard/users"),
+        api.get("/admin/dashboard/carts"),
+      ]);
 
-        setSummary(summaryRes.data);
-        setRecentUsers(usersRes.data);
-        setRecentCarts(cartsRes.data);
-      } catch {
-        setError("Failed to load dashboard");
-      } finally {
-        setLoading(false);
-      }
-    };
+      setSummary(summaryRes.data);
+      setRecentUsers(usersRes.data.users || []);
+      setRecentCarts(cartsRes.data.carts || []);
+    } catch {
+      setError("Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchDashboard();
-  }, []);
+  fetchDashboard();
+}, []);
+
 
   if (loading) {
     return <div className="text-gray-600">Loading dashboard…</div>;
@@ -81,18 +82,19 @@ export default function Dashboard() {
 
   const COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444"];
 
-  const recentActivity = [
-    ...recentUsers.map((u) => ({
-      action: "New user registered",
-      item: u.email,
-      time: new Date(u.createdAt).toLocaleDateString(),
-    })),
-    ...recentCarts.map((c) => ({
-      action: "Cart updated",
-      item: c.userId?.email || "User",
-      time: new Date(c.updatedAt).toLocaleDateString(),
-    })),
-  ].slice(0, 6);
+ const recentActivity = [
+  ...(Array.isArray(recentUsers) ? recentUsers : []).map((u) => ({
+    action: "New user registered",
+    item: u.email,
+    time: new Date(u.createdAt).toLocaleDateString(),
+  })),
+  ...(Array.isArray(recentCarts) ? recentCarts : []).map((c) => ({
+    action: "Cart updated",
+    item: c.userId?.email || "User",
+    time: new Date(c.updatedAt).toLocaleDateString(),
+  })),
+].slice(0, 6);
+
 
   return (
     <div className="space-y-10">
