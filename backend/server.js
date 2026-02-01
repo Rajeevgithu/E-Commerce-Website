@@ -29,27 +29,26 @@ const corsOptions = {
     "https://www.texttechenterprises.com",
     "https://api.texttechenterprises.com",
   ],
-  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // ✅ REQUIRED for preflight
+app.options("*", cors(corsOptions));
 
 /* ================== BODY PARSERS ================== */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ================== PREVENT OPTIONS BLOCKING ================== */
-app.use("/api", (req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
+/* ================== ROUTES (NO RATE LIMIT) ================== */
 
-/* ================== RATE LIMIT ================== */
+// 🔐 ADMIN AUTH
+app.use("/api/admin", require("./routes/adminAuthRoutes"));
+
+// 👤 USER AUTH
+app.use("/api/auth", require("./routes/authRoutes"));
+
+/* ================== RATE LIMIT (PROTECTED ROUTES) ================== */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -58,17 +57,11 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
-/* ================== ROUTES ================== */
-
-// 🔐 ADMIN AUTH
-app.use("/api/admin", require("./routes/adminAuthRoutes"));
+/* ================== PROTECTED ROUTES ================== */
 
 // 📊 ADMIN DASHBOARD
 app.use("/api/admin/dashboard", require("./routes/adminDashboardRoutes"));
 app.use("/api/admin/users", require("./routes/adminUserRoutes"));
-
-// 👤 USER AUTH
-app.use("/api/auth", require("./routes/authRoutes"));
 
 // 🛍 PRODUCTS
 app.use("/api/products", require("./routes/productRoutes"));
