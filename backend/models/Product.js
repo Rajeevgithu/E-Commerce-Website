@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
-    image: {
+    images: {
       type: [String],
       required: true,
     },
@@ -20,7 +20,11 @@ const productSchema = new mongoose.Schema(
 
     // ❌ price REMOVED
     // price: { type: Number, required: true },
-
+availability: {
+  type: Boolean,
+  default: true,
+},
+  
     category: {
       type: String,
       enum: [

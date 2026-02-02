@@ -193,18 +193,15 @@ export default function Products() {
           <tbody>
             {filteredProducts.map((product) => (
               <tr key={product._id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-4 flex items-center gap-3">
-                  <img
-                    src={
-                      Array.isArray(product.images)
-                        ? product.images[0]
-                        : product.images
-                    }
-                    alt={product.name}
-                    className="h-12 w-12 rounded-lg object-cover"
-                  />
-                  <span className="font-medium">{product.name}</span>
-                </td>
+              <td className="px-6 py-4 flex items-center gap-3">
+  <img
+    src={product.images?.[0] || "/placeholder.png"}
+    alt={product.name}
+    className="h-12 w-12 rounded-lg object-cover"
+  />
+  <span className="font-medium">{product.name}</span>
+</td>
+
 
                 <td className="px-6 py-4 text-gray-600 truncate max-w-sm">
                   {product.description}
@@ -268,7 +265,13 @@ export default function Products() {
                 <option value="Paint & Coating">Paint & Coating</option>
               </select>
 
-              <input type="file" accept="image/*" onChange={handleImageAdd} />
+              <input
+  type="file"
+  accept="image/*"
+  multiple
+  onChange={handleImageAdd}
+/>
+
 
               {formData.images.length > 0 && (
                 <div className="grid grid-cols-5 gap-4">

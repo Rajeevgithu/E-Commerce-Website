@@ -46,10 +46,6 @@ const getBlogById = async (req, res) => {
  */
 const createBlog = async (req, res) => {
   try {
-    if (!req.body) {
-      return res.status(400).json({ message: "Invalid form data" });
-    }
-
     const {
       title,
       content,
@@ -57,13 +53,11 @@ const createBlog = async (req, res) => {
       category,
       excerpt,
       readTime,
-      date,
+      published,
     } = req.body;
 
     if (!title || !content) {
-      return res
-        .status(400)
-        .json({ message: "Title and content are required" });
+      return res.status(400).json({ message: "Title and content are required" });
     }
 
     if (!req.file) {
@@ -75,27 +69,27 @@ const createBlog = async (req, res) => {
       content,
       author,
       category,
-      image: req.file.location, // ✅ S3 URL
+      image: req.file.location,
       excerpt,
       readTime,
-      date,
+      published: published ?? false,
     });
 
     res.status(201).json(blog);
   } catch (error) {
     console.error("Create blog error:", error.message);
-    res.status(500).json({
-      message: "Failed to create blog",
-    });
+    res.status(500).json({ message: "Failed to create blog" });
   }
 };
+
 
 
 /**
  * @desc    Update a blog (optional image replacement)
  * @route   PUT /api/blogs/:id
  * @access  Private/Admin
- */const updateBlog = async (req, res) => {
+ */
+const updateBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
 
@@ -103,27 +97,24 @@ const createBlog = async (req, res) => {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-    if (req.body) {
-      const {
-        title,
-        content,
-        author,
-        category,
-        excerpt,
-        readTime,
-        date,
-      } = req.body;
+    const {
+      title,
+      content,
+      author,
+      category,
+      excerpt,
+      readTime,
+      published,
+    } = req.body;
 
-      if (title !== undefined) blog.title = title;
-      if (content !== undefined) blog.content = content;
-      if (author !== undefined) blog.author = author;
-      if (category !== undefined) blog.category = category;
-      if (excerpt !== undefined) blog.excerpt = excerpt;
-      if (readTime !== undefined) blog.readTime = readTime;
-      if (date !== undefined) blog.date = date;
-    }
+    if (title !== undefined) blog.title = title;
+    if (content !== undefined) blog.content = content;
+    if (author !== undefined) blog.author = author;
+    if (category !== undefined) blog.category = category;
+    if (excerpt !== undefined) blog.excerpt = excerpt;
+    if (readTime !== undefined) blog.readTime = readTime;
+    if (published !== undefined) blog.published = published;
 
-    // ✅ Replace image only if uploaded
     if (req.file) {
       blog.image = req.file.location;
     }
@@ -132,11 +123,10 @@ const createBlog = async (req, res) => {
     res.json(updatedBlog);
   } catch (error) {
     console.error("Update blog error:", error.message);
-    res.status(500).json({
-      message: "Failed to update blog",
-    });
+    res.status(500).json({ message: "Failed to update blog" });
   }
 };
+
 
 /**
  * @desc    Delete a blog

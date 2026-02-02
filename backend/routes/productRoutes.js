@@ -75,7 +75,7 @@ router.post(
         description,
         category,
         availability,
-        image: imageUrls, // This now matches your array structure
+        images: imageUrls, // This now matches your array structure
       });
 
       res.status(201).json(product);
@@ -116,7 +116,7 @@ router.put(
         const newImageUrls = req.files.map((file) => file.location);
         
         // Option: Replace old images with new ones (standard for single-item updates)
-        product.image = newImageUrls; 
+        product.images = newImageUrls; 
       }
 
       const updatedProduct = await product.save();

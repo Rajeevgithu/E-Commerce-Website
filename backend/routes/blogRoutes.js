@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const adminAuth = require("../middleware/adminAuth");
-const upload = require("../middleware/s3Upload");
+const blogUpload = require("../middleware/blogUpload");
 
 const {
   getBlogs,
@@ -30,7 +30,7 @@ router.get("/:id", getBlogById);
 router.post(
   "/",
   adminAuth,
-  upload.single("image"), // 🔑 REQUIRED for S3
+  blogUpload.single("image"), // ✅ uploads to blogs/ folder in S3
   createBlog
 );
 
@@ -38,7 +38,7 @@ router.post(
 router.put(
   "/:id",
   adminAuth,
-  upload.single("image"), // 🔑 REQUIRED for S3
+  blogUpload.single("image"), // ✅ replaces blog image in S3
   updateBlog
 );
 
