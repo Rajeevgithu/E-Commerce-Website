@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
 import api from "../api/axios";
+import { FaWhatsapp } from "react-icons/fa";
+import { getWhatsAppUrl } from "../config/contact";
+
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -17,6 +20,10 @@ const ProductDetails = () => {
   const [previewImage, setPreviewImage] = useState(null);
 const [submitting, setSubmitting] = useState(false);
 const [formStatus, setFormStatus] = useState({ type: "", message: "" });
+const isValidEmail = (email) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  return regex.test(email);
+};
 
   
 
@@ -73,9 +80,17 @@ const handleChange = (e) => {
 };
 
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   if (submitting) return;
+
+  if (!isValidEmail(formData.email)) {
+    setFormStatus({
+      type: "error",
+      message: "Please enter a valid email address.",
+    });
+    return;
+  }
 
   setSubmitting(true);
   setFormStatus({ type: "", message: "" });
@@ -92,19 +107,9 @@ const handleChange = (e) => {
       message: "Enquiry sent successfully. We will contact you shortly.",
     });
 
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-    });
+    setFormData({ name: "", email: "", phone: "", message: "" });
 
-    // Auto-hide success message
-    setTimeout(() => {
-      setFormStatus({ type: "", message: "" });
-    }, 4000);
-
-  } catch (error) {
+  } catch {
     setFormStatus({
       type: "error",
       message: "Failed to send enquiry. Please try again.",
@@ -113,6 +118,7 @@ const handleChange = (e) => {
     setSubmitting(false);
   }
 };
+
 
 
   if (loading)
@@ -334,9 +340,34 @@ const handleChange = (e) => {
 >
   Enquire About This Product
 </a>
+{/* ================= PRODUCT WHATSAPP ENQUIRY ================= */}
+<div className="fixed right-4 bottom-36 z-50">
+  <a
+    href={getWhatsAppUrl(product)}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="WhatsApp Product Enquiry"
+    className="
+      w-12 h-12
+      flex items-center justify-center
+      rounded-full
+      bg-green-500
+      text-white
+      shadow-lg shadow-green-500/30
+      transition-all duration-300
+      hover:bg-green-600
+      hover:scale-110
+      active:scale-95
+    "
+  >
+    <FaWhatsapp className="text-xl" />
+  </a>
+</div>
 
 </div>
 </div>
+
+
 {/* ================= ENQUIRY ================= */}
 <section id="enquiry" className="mt-6 sm:mt-12">
   <div className="w-full sm:max-w-7xl mx-auto px-0 sm:px-6">
@@ -355,6 +386,25 @@ const handleChange = (e) => {
         space-y-3 sm:space-y-5
       "
     >
+      {/* PRODUCT NAME (AUTO-FILLED) */}
+<input
+  type="text"
+  value={product.name}
+  readOnly
+  className="
+    w-full
+    px-3 sm:px-4
+    py-2 sm:py-3
+    text-sm sm:text-base
+    rounded-md sm:rounded-lg
+    bg-slate-800
+    text-white
+    border border-white/20
+    cursor-not-allowed
+    opacity-90
+  "
+/>
+
       {["name", "email", "phone"].map((field) => (
         <input
           key={field}
@@ -377,6 +427,8 @@ const handleChange = (e) => {
           "
         />
       ))}
+
+      
 
       <textarea
         name="message"

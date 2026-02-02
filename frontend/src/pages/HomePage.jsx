@@ -319,23 +319,23 @@ export default function HomePage() {
             >
               Featured Machinery
             </h2>
+{/* MOBILE BUTTON (INLINE) */}
+<Link
+  to="/all-products"
+  className="
+    sm:hidden
+    inline-flex items-center
+    px-3 py-1.5
+    rounded-md
+    border border-white
+    text-white text-xs font-semibold
+    transition
+    hover:bg-white/10
+  "
+>
+  View All →
+</Link>
 
-            {/* MOBILE BUTTON (INLINE) */}
-            <Link
-              to="/all-products"
-              className="
-                sm:hidden
-                inline-flex items-center
-                px-3 py-1.5
-                rounded-md
-                border border-white
-                text-xs font-semibold
-                transition
-                hover:bg-white/10
-              "
-            >
-              View All →
-            </Link>
           </div>
 
           <p

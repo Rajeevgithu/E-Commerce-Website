@@ -7,8 +7,8 @@ export const contactConfig = {
   companyShortName: "TTE",
   
   // Contact Details
-  phone: "+91 7756038758", // Update for each client
-  whatsapp: "+91 7756038758", // Update for each client
+  phone: "+91 8856963655", // Update for each client
+  whatsapp: "+91 8856963655", // Update for each client
   email: "sales@texttechenterprises.com", // Update for each client
   
   // Address
@@ -35,12 +35,31 @@ export const contactConfig = {
   ]
 };
 
-// Helper function to get WhatsApp URL
-export const getWhatsAppUrl = () => {
-  return `https://wa.me/${contactConfig.whatsapp.replace(/\D/g, '')}`;
+// Helper function to get WhatsApp URL (generic or product-specific)
+export const getWhatsAppUrl = (product = null) => {
+  const phone = contactConfig.whatsapp.replace(/\D/g, "");
+
+  let message = `Hello ${contactConfig.companyName},\n\n`;
+
+  if (product?.name) {
+    message += `I am interested in the following product:\n\n`;
+     message += `🟢 Product: ${product.name}\n`;
+
+    if (product.category) {
+      message += `🟢 Category: ${product.category}\n`;
+    }
+
+    message += `\nPlease share more details, pricing, and availability.\n\n`;
+  } else {
+    message += `I would like to enquire about your products.\n\n`;
+  }
+
+  message += `Thank you.`;
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 };
 
 // Helper function to get phone URL
 export const getPhoneUrl = () => {
   return `tel:${contactConfig.phone}`;
-}; 
+};

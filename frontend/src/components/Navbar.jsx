@@ -52,7 +52,7 @@ const Navbar = () => {
           {/* 🔹 Reduced height (py-2 instead of py-3/4) */}
 
           <div className="flex items-center gap-3">
-            <img src={Logo} className="h-8 invert" />
+            <img src={Logo} className="h-8 " />
             <span className="font-semibold text-base">
               Text Tech Enterprises
             </span>

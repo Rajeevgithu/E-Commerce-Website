@@ -57,6 +57,16 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
+/* ================== CONTACT RATE LIMIT ================== */
+const contactLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 5, // 5 enquiries per 10 minutes per IP
+  message: {
+    success: false,
+    message: "Too many enquiries. Please try again later.",
+  },
+});
+
 /* ================== PROTECTED ROUTES ================== */
 
 // 📊 ADMIN DASHBOARD
@@ -67,7 +77,7 @@ app.use("/api/admin/users", require("./routes/adminUserRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 
 // 📩 CONTACT
-app.use("/api/contact", require("./routes/contact"));
+app.use("/api/contact", contactLimiter, require("./routes/contact"));
 
 // 📰 BLOGS
 app.use("/api/blogs", require("./routes/blogRoutes"));
