@@ -37,13 +37,11 @@ const FeaturedProducts = ({ products = [] }) => {
         {/* Product Grid */}
         <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => {
-            const image = Array.isArray(product.image)
-              ? product.image[0]
-              : product.image;
+            const imgSrc =
+  Array.isArray(product.image) && product.image.length > 0
+    ? product.image[0]
+    : "/placeholder.png";
 
-            const imgSrc = image?.startsWith("http")
-              ? image
-              : `${BASE_URL}/${image?.replace(/^\/+/, "")}`;
 
             return (
               <Link

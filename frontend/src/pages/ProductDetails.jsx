@@ -6,8 +6,6 @@ import { FaWhatsapp } from "react-icons/fa";
 import { getWhatsAppUrl } from "../config/contact";
 
 
-const BASE_URL = import.meta.env.VITE_API_URL;
-
 const ProductDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -46,16 +44,11 @@ const isValidEmail = (email) => {
         setProduct(res.data);
 
         const images = Array.isArray(res.data.image)
-          ? res.data.image
-          : [res.data.image];
+  ? res.data.image
+  : [];
 
-        const formatted = images.map((img) =>
-          img?.startsWith("http")
-            ? img
-            : `${BASE_URL}/${img?.replace(/^\/+/, "")}`
-        );
+setActiveImage(images[0] || "");
 
-        setActiveImage(formatted[0]);
 
         const relatedRes = await api.get("/products");
         setRelated(
@@ -213,9 +206,8 @@ const handleSubmit = async (e) => {
       "
     >
       {images.map((img, i) => {
-        const src = img.startsWith("http")
-          ? img
-          : `${BASE_URL}/${img.replace(/^\/+/, "")}`;
+  const src = img;
+
 
         return (
           <button

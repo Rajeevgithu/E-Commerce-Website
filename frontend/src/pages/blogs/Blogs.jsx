@@ -31,7 +31,10 @@ const Blogs = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch("http://54.90.195.30/api/blogs");
+        const response = await fetch(
+  `${import.meta.env.VITE_API_URL}/blogs`
+);
+
         if (!response.ok) throw new Error("Failed to fetch blogs");
 
         const data = await response.json();
@@ -219,7 +222,8 @@ if (loading) {
               <FaClock /> {post.readTime}
             </span>
             <span className="flex items-center gap-1">
-              <FaCalendarAlt /> {post.date}
+              date: new Date(blog.date || blog.createdAt).toLocaleDateString(),
+
             </span>
           </div>
 

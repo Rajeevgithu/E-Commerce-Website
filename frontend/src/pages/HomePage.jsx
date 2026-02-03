@@ -87,13 +87,11 @@ export default function HomePage() {
       onDragEnd={() => startSlider(controls, direction)}
     >
       {[...items, ...items].map((product, index) => {
-        const img = Array.isArray(product.image)
-          ? product.image[0]
-          : product.image;
+       const imgSrc =
+  Array.isArray(product.image) && product.image.length > 0
+    ? product.image[0]
+    : "/placeholder.png";
 
-        const imgSrc = img?.startsWith("http")
-          ? img
-          : `${import.meta.env.VITE_API_URL}/${img?.replace(/^\/+/, "")}`;
 
         return (
           <div

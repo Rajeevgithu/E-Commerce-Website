@@ -177,15 +177,13 @@ function ProductPage() {
 
 
       {filteredProducts.map((product) => {
-        const img = Array.isArray(product.image)
-          ? product.image[0]
-          : product.image;
+  const imgSrc =
+    Array.isArray(product.image) && product.image.length > 0
+      ? product.image[0]
+      : "/placeholder.png"; // fallback image
 
-        const imgSrc = img?.startsWith("http")
-          ? img
-          : `${BASE_URL}/${img?.replace(/^\/+/, "")}`;
+  return (
 
-        return (
          <Link
   key={product._id}
   to={`/product/${product._id}`}
@@ -252,13 +250,10 @@ function ProductPage() {
                     {/* Horizontal Row */}
                     <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
                       {items.slice(0, 10).map((product) => {
-                        const img = Array.isArray(product.image)
-                          ? product.image[0]
-                          : product.image;
-
-                        const imgSrc = img?.startsWith("http")
-                          ? img
-                          : `${BASE_URL}/${img?.replace(/^\/+/, "")}`;
+    const imgSrc =
+      Array.isArray(product.image) && product.image.length > 0
+        ? product.image[0]
+        : "/placeholder.png";
 
                         return (
                           <Link
