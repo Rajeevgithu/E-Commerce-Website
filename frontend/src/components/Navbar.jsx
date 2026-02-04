@@ -1,6 +1,6 @@
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Logo from "../assets/images/Logo.png";
+import Logo from "../assets/images/Logo.jpeg";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
@@ -51,12 +51,16 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
           {/* 🔹 Reduced height (py-2 instead of py-3/4) */}
 
-          <div className="flex items-center gap-3">
-            <img src={Logo} className="h-8 " />
-            <span className="font-semibold text-base">
-              Text Tech Enterprises
-            </span>
-          </div>
+         <div className="flex items-center gap-3">
+  <img
+    src={Logo}
+    alt="Text Tech"
+    className="h-8 w-8 rounded-md object-cover"
+  />
+  <span className="font-semibold text-base">
+    Text Tech Enterprises
+  </span>
+</div>
 
           <div className="flex items-center gap-4">
             {/* ADMIN LOGIN */}

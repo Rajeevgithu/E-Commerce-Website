@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useAnimation } from "framer-motion";
+import placeholder from "../assets/images/placeholder.png";
 
 import api from "../api/axios";
 
@@ -87,10 +88,11 @@ export default function HomePage() {
       onDragEnd={() => startSlider(controls, direction)}
     >
       {[...items, ...items].map((product, index) => {
-       const imgSrc =
-  Array.isArray(product.image) && product.image.length > 0
-    ? product.image[0]
-    : "/placeholder.png";
+      const imgSrc =
+  Array.isArray(product.images) && product.images.length > 0
+    ? product.images[0]   // ✅ S3 URL
+    : placeholder;        // ✅ bundled fallback
+
 
 
         return (
@@ -149,11 +151,16 @@ export default function HomePage() {
                 flex items-center justify-center
                 shadow-inner
               ">
-                <img
-                  src={imgSrc}
-                  alt={product.name}
-                  className="max-h-full max-w-full object-contain"
-                />
+               <img
+  src={imgSrc}
+  alt={product.name}
+  onError={(e) => {
+    e.currentTarget.onerror = null; // prevent infinite loop
+    e.currentTarget.src = placeholder;
+  }}
+  className="max-h-full max-w-full object-contain"
+/>
+
               </div>
             </div>
 

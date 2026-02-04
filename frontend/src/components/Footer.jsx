@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import footerLogo from "../assets/images/Logo.png";
+import footerLogo from "../assets/images/Logo.jpeg";
 import Banner from "../assets/images/footer-banner.jpg";
 import { contactConfig } from "../config/contact";
 import {
@@ -50,11 +50,12 @@ const Footer = () => {
 {/* ================= COMPANY INFO ================= */}
 <div className="col-span-2 sm:col-span-1">
   <div className="flex items-center gap-4 mb-3 sm:mb-5">
-    <img
-      src={footerLogo}
-      alt="Text Tech Enterprises"
-      className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-    />
+ <img
+  src={footerLogo}
+  alt="Text Tech Enterprises"
+  className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover"
+/>
+
 
     <h2 className="text-lg sm:text-xl font-semibold text-white leading-tight">
       {contactConfig.companyName}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash2, X } from "lucide-react";
 import api from "../../api/axios";
+import placeholder from "../../assets/images/placeholder.png"
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -193,14 +194,22 @@ export default function Products() {
           <tbody>
             {filteredProducts.map((product) => (
               <tr key={product._id} className="border-b hover:bg-gray-50">
-              <td className="px-6 py-4 flex items-center gap-3">
-  <img
-    src={product.images?.[0] || "/placeholder.png"}
-    alt={product.name}
-    className="h-12 w-12 rounded-lg object-cover"
-  />
-  <span className="font-medium">{product.name}</span>
-</td>
+           <td className="px-6 py-4 flex items-center gap-3">
+        <img
+          src={
+            Array.isArray(product.images) && product.images.length > 0
+              ? product.images[0]   // ✅ S3 URL
+              : placeholder          // ✅ bundled fallback
+          }
+          onError={(e) => {
+            e.currentTarget.src = placeholder; // ✅ if S3 image breaks
+          }}
+          alt={product.name}
+          className="h-12 w-12 rounded-lg object-cover"
+        />
+        <span className="font-medium">{product.name}</span>
+      </td>
+
 
 
                 <td className="px-6 py-4 text-gray-600 truncate max-w-sm">

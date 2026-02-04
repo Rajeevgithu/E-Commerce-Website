@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useProducts } from "../hooks/useProducts";
 import { IoMdSearch } from "react-icons/io";
 import { useParams, useLocation, Link } from "react-router-dom";
+import placeholder from "../assets/images/placeholder.png";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -178,9 +179,10 @@ function ProductPage() {
 
       {filteredProducts.map((product) => {
   const imgSrc =
-    Array.isArray(product.image) && product.image.length > 0
-      ? product.image[0]
-      : "/placeholder.png"; // fallback image
+  Array.isArray(product.images) && product.images.length > 0
+    ? product.images[0]
+    : placeholder;
+// fallback image
 
   return (
 
@@ -199,10 +201,15 @@ function ProductPage() {
 
             <div className="h-40 bg-white flex items-center justify-center p-4">
               <img
-                src={imgSrc}
-                alt={product.name}
-                className="max-h-full object-contain group-hover:scale-105 transition"
-              />
+  src={imgSrc}
+  onError={(e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = placeholder;
+  }}
+  alt={product.name}
+  className="max-h-full object-contain group-hover:scale-105 transition"
+/>
+
             </div>
 
             <div className="bg-slate-900 px-4 py-3 flex-1 flex items-end">
@@ -251,9 +258,10 @@ function ProductPage() {
                     <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
                       {items.slice(0, 10).map((product) => {
     const imgSrc =
-      Array.isArray(product.image) && product.image.length > 0
-        ? product.image[0]
-        : "/placeholder.png";
+  Array.isArray(product.images) && product.images.length > 0
+    ? product.images[0]
+    : placeholder;
+
 
                         return (
                           <Link
@@ -272,11 +280,16 @@ function ProductPage() {
                           >
                            <div className="h-36 sm:h-40 md:h-44 lg:h-52 bg-white flex items-center justify-center p-4">
 
-                              <img
-                                src={imgSrc}
-                                alt={product.name}
-                                className="max-h-full object-contain"
-                              />
+                             <img
+  src={imgSrc}
+  onError={(e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = placeholder;
+  }}
+  alt={product.name}
+  className="max-h-full object-contain"
+/>
+
                             </div>
 
                            <div className="bg-slate-900 px-4 py-3 flex-1 flex items-end">

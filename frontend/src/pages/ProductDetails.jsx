@@ -4,6 +4,7 @@ import { IoArrowBack } from "react-icons/io5";
 import api from "../api/axios";
 import { FaWhatsapp } from "react-icons/fa";
 import { getWhatsAppUrl } from "../config/contact";
+import placeholder from "../assets/images/placeholder.png";
 
 
 const ProductDetails = () => {

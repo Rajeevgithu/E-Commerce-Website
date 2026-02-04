@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import placeholder from "../../assets/images/placeholder.png"
 import {
   FaCalendarAlt,
   FaUser,
@@ -54,9 +55,9 @@ const Blogs = () => {
               ? blog.category
               : "Other",
             image: Array.isArray(blog.image)
-              ? blog.image[0]
-              : blog.image ||
-                "https://images.unsplash.com/photo-1581092921461-39b9d08a9b21",
+  ? blog.image[0]
+  : blog.image || placeholder,
+
             readTime: blog.readTime || "3 min read",
           }));
 
@@ -221,10 +222,14 @@ if (loading) {
             <span className="flex items-center gap-1">
               <FaClock /> {post.readTime}
             </span>
-            <span className="flex items-center gap-1">
-              date: new Date(blog.date || blog.createdAt).toLocaleDateString(),
+          <span className="flex items-center gap-1">
+  <FaCalendarAlt />
+  {post.date
+    ? new Date(post.date).toLocaleDateString()
+    : "—"}
+</span>
 
-            </span>
+
           </div>
 
           <h3 className="text-xl font-semibold mb-2 text-slate-900">

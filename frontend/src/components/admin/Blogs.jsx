@@ -9,6 +9,8 @@ import {
   EyeOff,
 } from "lucide-react";
 import api from "../../api/axios";
+import placeholder from "../../assets/images/placeholder.png"
+
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState([]);
@@ -241,10 +243,15 @@ export default function Blogs() {
             className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition"
           >
             <img
-              src={blog.image}
-              alt={blog.title}
-              className="h-48 w-full object-cover"
-            />
+  src={blog.image || placeholder}
+  alt={blog.title}
+  onError={(e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = placeholder;
+  }}
+  className="h-48 w-full object-cover"
+/>
+
 
             <div className="p-5">
               <div className="flex justify-between items-center mb-3">

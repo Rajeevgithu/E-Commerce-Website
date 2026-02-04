@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import featuredBg from "../assets/featured-bg.jpg";
+import placeholder from "../assets/images/placeholder.png";
+// adjust path if needed
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -38,9 +40,10 @@ const FeaturedProducts = ({ products = [] }) => {
         <div className="grid gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => {
             const imgSrc =
-  Array.isArray(product.image) && product.image.length > 0
-    ? product.image[0]
-    : "/placeholder.png";
+  Array.isArray(product.images) && product.images.length > 0
+    ? product.images[0]   // ✅ S3 URL
+    : placeholder;        // ✅ bundled fallback
+
 
 
             return (
@@ -60,13 +63,20 @@ const FeaturedProducts = ({ products = [] }) => {
                     className="h-60 bg-white rounded-t-2xl
                     flex items-center justify-center p-6 overflow-hidden"
                   >
-                    <img
-                      src={imgSrc}
-                      alt={product.name}
-                      className="max-h-full max-w-full object-contain
-                      transition-transform duration-300
-                      group-hover:scale-105"
-                    />
+                   <img
+  src={imgSrc}
+  alt={product.name}
+  onError={(e) => {
+    e.currentTarget.onerror = null; // prevent infinite loop
+    e.currentTarget.src = placeholder;
+  }}
+  className="
+    max-h-full max-w-full object-contain
+    transition-transform duration-300
+    group-hover:scale-105
+  "
+/>
+
                   </div>
 
                   {/* Name */}
